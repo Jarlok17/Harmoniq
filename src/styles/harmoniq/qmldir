@@ -1,0 +1,4 @@
+module Harmoniq
+singleton Themes 1.0 Themes.qml
+MenuBar 1.0 MenuBar.qml
+ToolButton 1.0 ToolButton.qml
