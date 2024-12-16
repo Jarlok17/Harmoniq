@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="Icons/64x64">
+        <file alias="brush.svg">64x64/brush.svg</file>
+        <file alias="color-fill.svg">64x64/color-fill.svg</file>
+        <file alias="dropper.svg">64x64/dropper.svg</file>
+        <file alias="edit-pen.svg">64x64/edit-pen.svg</file>
+        <file alias="eraser.svg">64x64/eraser.svg</file>
+        <file alias="move-arrows.svg">64x64/move-arrows.svg</file>
+        <file alias="text-tool.svg">64x64/text-tool.svg</file>
+        <file alias="zoom-in.svg">64x64/zoom-in.svg</file>
+        <file alias="zoom-out.svg">64x64/zoom-out.svg</file>
+    </qresource>
+    <qresource prefix="Icons/32x32">
+        <file alias="brush.svg">32x32/brush.svg</file>
+    </qresource>
+</RCC>

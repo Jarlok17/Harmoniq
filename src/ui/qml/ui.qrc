@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="UI/">
+        <file>Canvas.qml</file>
+
+        <file alias="ToolBars/LeftBar.qml">ToolBars/LeftBar.qml</file>
+        <file alias="ToolBars/TopMenu.qml">ToolBars/TopMenu.qml</file>
+    </qresource>
+</RCC>
