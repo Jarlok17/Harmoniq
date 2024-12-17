@@ -4,5 +4,6 @@
 
         <file alias="ToolBars/LeftBar.qml">ToolBars/LeftBar.qml</file>
         <file alias="ToolBars/TopMenu.qml">ToolBars/TopMenu.qml</file>
+        <file alias="ToolBars/TopBar.qml">ToolBars/TopBar.qml</file>
     </qresource>
 </RCC>
