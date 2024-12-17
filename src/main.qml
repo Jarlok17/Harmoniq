@@ -25,6 +25,14 @@ ApplicationWindow {
         source: "qrc:/UI/ToolBars/TopMenu.qml"
         anchors.top: parent.top
     }
+
+    Loader {
+        id: topToolBarLoader
+        source: "qrc:/UI/ToolBars/TopBar.qml"
+        anchors.top: menuLoader.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+    }
     
     //Canvas 
     Loader {
@@ -40,7 +48,7 @@ ApplicationWindow {
         id: leftBarLoader
         source: "qrc:/UI/ToolBars/LeftBar.qml"
         anchors.left: parent.left
-        anchors.top: menuLoader.bottom
+        anchors.top: topToolBarLoader.bottom
         anchors.bottom: parent.bottom
     }
 }
