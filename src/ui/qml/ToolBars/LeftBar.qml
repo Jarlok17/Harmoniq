@@ -32,7 +32,7 @@ Item {
                     ]
 
                     delegate: ToolButton {
-                        width: leftMenu.width * 0.45
+                        width: leftMenu.width * 0.40
                         iconSource: modelData
                         buttonManager: leftMenu.buttonManager
                     }
@@ -55,7 +55,7 @@ Item {
                     ]
 
                     delegate: ToolButton {
-                        width: leftMenu.width * 0.45
+                        width: leftMenu.width * 0.40
                         iconSource: modelData
                         buttonManager: leftMenu.buttonManager
                     }            
@@ -78,7 +78,7 @@ Item {
                     ]
 
                     delegate: ToolButton {
-                        width: leftMenu.width * 0.45
+                        width: leftMenu.width * 0.40
                         iconSource: modelData
                         buttonManager: leftMenu.buttonManager
                     }
