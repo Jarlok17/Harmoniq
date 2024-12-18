@@ -20,8 +20,8 @@ T.Button {
 
         Image {
             anchors.centerIn: parent
-            width: control.width * 0.45
-            height: control.width * 0.45
+            width: control.width * 0.6
+            height: control.width * 0.6
             source: iconSource
         }
     }
