@@ -1,22 +1,26 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Layouts
 
-Item {
-    id: drawingCanvas
-    width: 800
-    height: 600
+Flickable {
+    id: flickableArea
+    anchors.fill: parent
+    clip: true
+    contentWidth: canvas.width > width ? canvas.width : width
+    contentHeight: canvas.height > height ? canvas.height : height
 
-    ScrollView {
-        id: scrollView
-        anchors.fill: parent
-        clip: true
+    Rectangle {
+        id: container
+        width: parent.width
+        height: parent.height
+        color: "transparent"
 
         Canvas {
             id: canvas
             width: 600
             height: 800
-            anchors.centerIn: parent
+            anchors.centerIn: parent    
+            scale: 1
+            clip: true
 
             property int lastX: 0
             property int lastY: 0
@@ -25,8 +29,8 @@ Item {
             function clear() {
                 var ctx = getContext("2d");
                 ctx.fillStyle = "white";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                canvas.requestPaint();
+                ctx.fillRect(0, 0, width, height);
+                requestPaint();
             }
 
             MouseArea {
@@ -43,12 +47,27 @@ Item {
                 }
             }
 
+            WheelHandler {
+                id: wheelHandler
+                target: canvas
+                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+
+                onWheel: function(wheel) {
+                    const scaleFactor = 0.1;
+                    if (wheel.angleDelta.y > 0 && canvas.scale < 3.0) {
+                        canvas.scale += scaleFactor;
+                    } else if (wheel.angleDelta.y < 0 && canvas.scale > 0.3) {
+                        canvas.scale -= scaleFactor;
+                    }
+                }
+            }
+
             onPaint: {
                 var ctx = getContext("2d");
 
                 if (isFirstDraw) {
                     ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillRect(0, 0, width, height);
                     isFirstDraw = false;
                 }
 
