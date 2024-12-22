@@ -8,6 +8,11 @@ Flickable {
     contentWidth: canvas.width > width ? canvas.width : width
     contentHeight: canvas.height > height ? canvas.height : height
 
+    property alias canvas: canvas
+    property bool enableFlick: false
+
+    interactive: enableFlick
+
     Rectangle {
         id: container
         width: parent.width
@@ -16,8 +21,6 @@ Flickable {
 
         Canvas {
             id: canvas
-            width: 600
-            height: 800
             anchors.centerIn: parent    
             scale: 1
             clip: true
@@ -26,9 +29,20 @@ Flickable {
             property int lastY: 0
             property bool isFirstDraw: true
 
+            property int canvasWidth: 800
+            property int canvasHeight: 600
+            property string backgroundColor: "white"
+
+            onCanvasWidthChanged: clear()
+            onCanvasHeightChanged: clear()
+            onBackgroundColorChanged: clear()
+
+            width: canvasWidth
+            height: canvasHeight
+
             function clear() {
                 var ctx = getContext("2d");
-                ctx.fillStyle = "white";
+                ctx.fillStyle = backgroundColor;
                 ctx.fillRect(0, 0, width, height);
                 requestPaint();
             }
@@ -38,12 +52,16 @@ Flickable {
                 anchors.fill: parent
 
                 onPressed: {
-                    canvas.lastX = mouseX;
-                    canvas.lastY = mouseY;
+                    if (!flickableArea.enableFlick) {
+                        canvas.lastX = mouseX;
+                        canvas.lastY = mouseY;
+                    }
                 }
 
                 onPositionChanged: {
-                    canvas.requestPaint();
+                    if (!flickableArea.enableFlick) {
+                        canvas.requestPaint();
+                    }
                 }
             }
 
@@ -66,19 +84,10 @@ Flickable {
                 var ctx = getContext("2d");
 
                 if (isFirstDraw) {
-                    ctx.fillStyle = "white";
+                    ctx.fillStyle = backgroundColor;
                     ctx.fillRect(0, 0, width, height);
                     isFirstDraw = false;
                 }
-
-                ctx.lineWidth = 5;
-                ctx.strokeStyle = "black";
-                ctx.beginPath();
-                ctx.moveTo(lastX, lastY);
-                lastX = area.mouseX;
-                lastY = area.mouseY;
-                ctx.lineTo(lastX, lastY);
-                ctx.stroke();
             }
         }
     }
