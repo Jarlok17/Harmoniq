@@ -11,14 +11,5 @@ QtObject {
         "fontSize": 14
     }
 
-    property var lightTheme: {
-        "background": "#F5F5F5",
-        "foreground": "#000000",
-        "primary": "#2196F3",
-        "accent": "#E91E63",
-        "text": "#212121",
-        "fontSize": 14
-    }
-
     property var currentTheme: darkTheme
 }
