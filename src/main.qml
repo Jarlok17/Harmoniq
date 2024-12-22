@@ -56,6 +56,17 @@ ApplicationWindow {
         anchors.fill: parent
         anchors.topMargin: menuLoader.height + 30
         visible: startScreen.toolsVisible
+
+        Connections {
+            target: startScreen.item
+            onNewImageCreated: {
+                if (canvasLoader.item && canvasLoader.item.canvas) {
+                    canvasLoader.item.canvas.canvasWidth = width;
+                    canvasLoader.item.canvas.canvasHeight = height;
+                    canvasLoader.item.canvas.backgroundColor = color;
+                }
+            }
+}
     }
     
     //Left toolbar
