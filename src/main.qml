@@ -1,6 +1,5 @@
 import QtQuick 2.15
 import QtQuick.Window
-import QtQuick.Layouts
 import QtQuick.Controls 2.15
 
 import Harmoniq 1.0
@@ -77,5 +76,13 @@ ApplicationWindow {
         anchors.top: topToolBarLoader.bottom
         anchors.bottom: parent.bottom
         visible: startScreen.toolsVisible
+    }
+
+    Loader {
+        id: rightBarLoader
+        source: "qrc:/UI/ToolBars/RightBar.qml"
+        anchors.right: parent.right
+        anchors.top: topToolBarLoader.bottom
+        anchors.bottom: parent.bottom
     }
 }
