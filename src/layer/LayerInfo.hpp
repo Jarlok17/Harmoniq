@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GL/gl.h>
+#include <QColor>
 #include <QtOpenGL/QtOpenGL>
 
 namespace harmoniq { namespace layer {
@@ -9,9 +10,10 @@ struct Layer
         GLuint textureID;  // OpenGL texture identifier
         float opacity;     // Layer opacity
         bool visible;      // Layer visibility
-        int width, height; // Texture size
+        int width, height; // Layer size
+        QColor color;      // Layer color
 
-        Layer(int w, int h) : opacity(1.0f), visible(true), width(w), height(h)
+        Layer(int w, int h, const QColor &c = Qt::white) : opacity(1.0f), visible(true), width(w), height(h), color(c)
         {
             glGenTextures(1, &textureID);
             glBindTexture(GL_TEXTURE_2D, textureID);
