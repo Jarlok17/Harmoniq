@@ -4,7 +4,6 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt6 COMPONENTS Core Widgets Qml Quick QuickControls2 OpenGL REQUIRED)
 
 set(PROJECT_SOURCES
-    LayerInfo.hpp
     CanvasGL.hpp 
     CanvasGL.cpp
 )
