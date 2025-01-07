@@ -7,8 +7,27 @@
 namespace harmoniq { namespace canvas {
 
 CanvasGL::CanvasGL(QQuickItem *parent) : QQuickItem(parent) { setFlag(ItemHasContents, true); }
+CanvasGL::CanvasGL(const int &w, const int &h, const QColor &background, QQuickItem *parent)
+    : QQuickItem(parent)
+    , m_fboSize(w, h)
+    , m_backgroundColor(background)
+{
+    setFlag(ItemHasContents, true);
 
-CanvasGL::~CanvasGL() { delete m_fbo; }
+    m_shaderProgram = new QOpenGLShaderProgram();
+    m_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "qrc:/shaders/canvas.vert");
+    m_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "qrc:/shaders/canvas.frag");
+
+    if (!m_shaderProgram->link()) {
+        qWarning() << "Failed to link shader program: " << m_shaderProgram->log();
+    }
+}
+
+CanvasGL::~CanvasGL()
+{
+    delete m_fbo;
+    delete m_shaderProgram;
+}
 
 QSGNode *CanvasGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *data)
 {
@@ -54,6 +73,13 @@ QSGNode *CanvasGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *data)
         glFuncs->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glFuncs->glDisable(GL_SCISSOR_TEST);
 
+        if (m_shaderProgram && m_shaderProgram->bind()) {
+            m_shaderProgram->setUniformValue("color", QVector3D(1.0f, 1.0f, 1.0f));
+            m_shaderProgram->setUniformValue("opacity", m_opacity);
+
+            m_shaderProgram->release();
+        }
+
         m_fbo->release();
 
         auto texture = QNativeInterface::QSGOpenGLTexture::fromNative(m_fbo->texture(), window(), m_fboSize);
@@ -73,7 +99,14 @@ void CanvasGL::setBackgroundColor(const QColor &color)
     }
 }
 
-void CanvasGL::updateScaledSize() {}
+void CanvasGL::setOpacity(const float &opacity)
+{
+    if (m_opacity != opacity) {
+        m_opacity = opacity;
+        emit opacityChanged();
+        update();
+    }
+}
 
 void CanvasGL::setScale(const qreal &scale)
 {
