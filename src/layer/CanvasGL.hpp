@@ -15,16 +15,19 @@ class CanvasGL : public QQuickItem
 
         Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
         Q_PROPERTY(qreal scale READ scale WRITE setScale NOTIFY scaleChanged)
+        Q_PROPERTY(float opacity READ opacity WRITE setOpacity NOTIFY opacityChanged)
     public:
         explicit CanvasGL(QQuickItem *parent = nullptr);
+        explicit CanvasGL(const int &w, const int &h, const QColor &background, QQuickItem *parent = nullptr);
         ~CanvasGL();
 
         void setBackgroundColor(const QColor &color);
         void setScale(const qreal &scale);
-        void updateScaledSize();
+        void setOpacity(const float &opacity);
 
         qreal scale() const { return m_scale; }
         QColor backgroundColor() const { return m_backgroundColor; }
+        float opacity() const { return m_opacity; }
 
     protected:
         QSGNode *updatePaintNode(QSGNode *node, UpdatePaintNodeData *data) override;
@@ -32,12 +35,15 @@ class CanvasGL : public QQuickItem
     signals:
         void backgroundColorChanged();
         void scaleChanged();
+        void opacityChanged();
 
     private:
         QOpenGLFramebufferObject *m_fbo = nullptr;
+        QOpenGLShaderProgram *m_shaderProgram = nullptr;
+
         QColor m_backgroundColor = QColor(255, 255, 255);
         qreal m_scale = 1.0;
-        float opacity = 1.0f;
+        float m_opacity = 1.0f;
         QSize m_fboSize;
 };
 
