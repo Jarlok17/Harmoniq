@@ -1,11 +1,10 @@
 #pragma once
 
-#include <QOpenGLFunctions>
+#include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
 #include <QQuickItem>
 #include <QSGGeometryNode>
 #include <QSGSimpleTextureNode>
-#include <qopenglframebufferobject.h>
 
 namespace harmoniq { namespace canvas {
 
@@ -24,6 +23,8 @@ class CanvasGL : public QQuickItem
         void setBackgroundColor(const QColor &color);
         void setScale(const qreal &scale);
         void setOpacity(const float &opacity);
+
+        void initializeGL();
 
         qreal scale() const { return m_scale; }
         QColor backgroundColor() const { return m_backgroundColor; }
@@ -45,6 +46,10 @@ class CanvasGL : public QQuickItem
         qreal m_scale = 1.0;
         float m_opacity = 1.0f;
         QSize m_fboSize;
+
+        GLuint m_vao = 0;
+        GLuint m_vbo = 0;
+        bool m_geometryInitialized = false;
 };
 
 }} // namespace harmoniq::canvas
