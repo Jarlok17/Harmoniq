@@ -1,27 +1,22 @@
 #include "CanvasGL.hpp"
+#include <QFile>
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFramebufferObject>
 #include <QQuickWindow>
 #include <QSGSimpleTextureNode>
+#include <QThread>
 #include <iostream>
 
 namespace harmoniq { namespace canvas {
 
 CanvasGL::CanvasGL(QQuickItem *parent) : QQuickItem(parent) { setFlag(ItemHasContents, true); }
+
 CanvasGL::CanvasGL(const int &w, const int &h, const QColor &background, QQuickItem *parent)
     : QQuickItem(parent)
     , m_fboSize(w, h)
     , m_backgroundColor(background)
 {
     setFlag(ItemHasContents, true);
-
-    m_shaderProgram = new QOpenGLShaderProgram();
-    m_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "qrc:/shaders/canvas.vert");
-    m_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "qrc:/shaders/canvas.frag");
-
-    if (!m_shaderProgram->link()) {
-        qWarning() << "Failed to link shader program: " << m_shaderProgram->log();
-    }
 }
 
 CanvasGL::~CanvasGL()
@@ -51,9 +46,37 @@ CanvasGL::~CanvasGL()
     }
 }
 
-void CanvasGL::initializeGL()
+void CanvasGL::initializeGL(QOpenGLContext *currentContext)
 {
-    auto *glFuncs = QOpenGLContext::currentContext()->extraFunctions();
+    m_shaderProgram = new QOpenGLShaderProgram();
+
+    if (!currentContext) {
+        qWarning() << "No OpenGL context is current in this thread!";
+        return;
+    }
+
+    auto *glFuncs = currentContext->extraFunctions();
+
+    QFile vertexShaderFile(":/shaders/canvas.vert");
+    if (!vertexShaderFile.exists()) {
+        qWarning() << "Vertex shader file does not exist: :/shaders/canvas.vert";
+    }
+
+    QFile fragmentShaderFile(":/shaders/canvas.frag");
+    if (!fragmentShaderFile.exists()) {
+        qWarning() << "Fragment shader file does not exist: :/shaders/canvas.frag";
+    }
+
+    if (!m_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/canvas.vert")) {
+        qWarning() << "Failed to add vertex shader: " << m_shaderProgram->log();
+    }
+    if (!m_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/canvas.frag")) {
+        qWarning() << "Failed to add fragment shader: " << m_shaderProgram->log();
+    }
+
+    if (!m_shaderProgram->link()) {
+        qWarning() << "Failed to link shader program: " << m_shaderProgram->log();
+    }
 
     glFuncs->glGenVertexArrays(1, &m_vao);
     glFuncs->glGenBuffers(1, &m_vbo);
@@ -78,14 +101,15 @@ QSGNode *CanvasGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *data)
 {
     Q_UNUSED(data);
 
-    auto *glFuncs = QOpenGLContext::currentContext()->extraFunctions();
+    auto *context = QOpenGLContext::currentContext();
+    auto *glFuncs = context->extraFunctions();
     if (!glFuncs) {
         qWarning() << "OpenGL context is not valid!";
         return nullptr;
     }
 
     if (!m_geometryInitialized) {
-        initializeGL();
+        initializeGL(context);
     }
 
     GLint maxTextureSize;
@@ -114,17 +138,23 @@ QSGNode *CanvasGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *data)
     if (window()) {
         m_fbo->bind();
 
-        glFuncs->glEnable(GL_SCISSOR_TEST);
-        glFuncs->glScissor(0, 0, m_fboSize.width(), m_fboSize.height());
+        glFuncs->glEnable(GL_BLEND);
+        glFuncs->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glFuncs->glViewport(0, 0, m_fboSize.width() * m_scale, m_fboSize.height() * m_scale);
-        glFuncs->glClearColor(m_backgroundColor.redF(), m_backgroundColor.greenF(), m_backgroundColor.blueF(), m_opacity);
+        glFuncs->glClearColor(m_backgroundColor.redF(), m_backgroundColor.greenF(), m_backgroundColor.blueF(),
+                              QQuickItem::opacity());
         glFuncs->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glFuncs->glDisable(GL_SCISSOR_TEST);
 
-        if (m_shaderProgram && m_shaderProgram->bind()) {
+        if (!m_shaderProgram || !m_shaderProgram->bind()) {
+            qWarning() << "Shader program is not valid!";
+            return nullptr;
+        } else {
+            float opacity = QQuickItem::opacity();
+            m_shaderProgram->setUniformValue("opacity", opacity);
             m_shaderProgram->setUniformValue(
                 "color", QVector3D(m_backgroundColor.redF(), m_backgroundColor.greenF(), m_backgroundColor.blueF()));
-            m_shaderProgram->setUniformValue("opacity", m_opacity);
 
             glFuncs->glBindVertexArray(m_vao);
             glFuncs->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -148,15 +178,6 @@ void CanvasGL::setBackgroundColor(const QColor &color)
     if (m_backgroundColor != color) {
         m_backgroundColor = color;
         emit backgroundColorChanged();
-        update();
-    }
-}
-
-void CanvasGL::setOpacity(const float &opacity)
-{
-    if (m_opacity != opacity) {
-        m_opacity = opacity;
-        emit opacityChanged();
         update();
     }
 }
