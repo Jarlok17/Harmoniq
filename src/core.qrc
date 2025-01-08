@@ -3,4 +3,8 @@
         <file>main.qml</file>
 
     </qresource>
+    <qresource prefix="shaders/">
+        <file>layer/canvas.vert</file>
+        <file>layer/canvas.frag</file>
+    </qresource>
 </RCC>
