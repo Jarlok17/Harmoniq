@@ -26,8 +26,6 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-
-        property bool toolsVisible: false
     }
 
     //Top menu 
@@ -35,6 +33,8 @@ ApplicationWindow {
         id: menuLoader
         source: "qrc:/UI/ToolBars/TopMenu.qml"
         anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.left: parent.left
     }
 
     //Top toolbar
@@ -44,7 +44,7 @@ ApplicationWindow {
         anchors.top: menuLoader.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        visible: startScreen.toolsVisible
+        visible: false 
     }
     
     //Canvas 
@@ -53,19 +53,7 @@ ApplicationWindow {
         z: -3
         source: "qrc:/UI/Canvas.qml"
         anchors.fill: parent
-        anchors.topMargin: menuLoader.height + 30
-        visible: startScreen.toolsVisible
-
-        Connections {
-            target: startScreen.item
-            onNewImageCreated: {
-                if (canvasLoader.item && canvasLoader.item.canvas) {
-                    canvasLoader.item.canvas.canvasWidth = width;
-                    canvasLoader.item.canvas.canvasHeight = height;
-                    canvasLoader.item.canvas.backgroundColor = color;
-                }
-            }
-}
+        visible: false 
     }
     
     //Left toolbar
@@ -75,14 +63,16 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.top: topToolBarLoader.bottom
         anchors.bottom: parent.bottom
-        visible: startScreen.toolsVisible
+        visible: false 
     }
-
+    
+    //right toolbar
     Loader {
         id: rightBarLoader
         source: "qrc:/UI/ToolBars/RightBar.qml"
         anchors.right: parent.right
         anchors.top: topToolBarLoader.bottom
         anchors.bottom: parent.bottom
+        visible: false
     }
 }
