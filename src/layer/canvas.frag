@@ -3,7 +3,7 @@
 out vec4 fragColor;
 
 uniform vec3 color;
-uniform float opacity
+uniform float opacity;
 
 void main()
 {
