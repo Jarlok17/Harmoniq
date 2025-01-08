@@ -4,9 +4,6 @@ import Harmoniq 1.0
 
 MenuBar {
     id: menuBar
-    anchors.left: root.left
-    anchors.right: root.right
-    width: parent.width
 
     Menu {
         title: qsTr("File")
