@@ -1,16 +1,15 @@
 import QtQuick 2.15
+import Harmoniq_backend 1.0
 
 Flickable {
     id: flickableArea
     anchors.fill: parent
     clip: true
-    contentWidth: canvas.width > width ? canvas.width : width
-    contentHeight: canvas.height > height ? canvas.height : height
+    contentWidth: Math.max(canvas.width * canvas.scale, width)
+    contentHeight: Math.max(canvas.height * canvas.scale, height)
+    interactive: true
 
     property alias canvas: canvas
-    property bool enableFlick: false
-
-    interactive: enableFlick
 
     Rectangle {
         id: container
@@ -18,51 +17,23 @@ Flickable {
         height: parent.height
         color: "transparent"
 
-        Canvas {
+        CanvasGL {
             id: canvas
-            anchors.centerIn: parent    
-            scale: 1
-            clip: true
+            width: 800
+            height: 600
+            scale: 1.0
+            opacity: 1.0
+            anchors.centerIn: parent
 
-            property int lastX: 0
-            property int lastY: 0
-            property bool isFirstDraw: true
-
-            property int canvasWidth: 800
-            property int canvasHeight: 600
-            property string backgroundColor: "white"
-
-            onCanvasWidthChanged: clear()
-            onCanvasHeightChanged: clear()
-            onBackgroundColorChanged: clear()
-
-            width: canvasWidth
-            height: canvasHeight
-
-            function clear() {
-                var ctx = getContext("2d");
-                ctx.fillStyle = backgroundColor;
-                ctx.fillRect(0, 0, width, height);
-                requestPaint();
+            transform: Scale {
+                id: canvasScale
+                origin.x: canvas.width / 2
+                origin.y: canvas.height / 2
+                xScale: canvas.scale
+                yScale: canvas.scale
             }
 
-            MouseArea {
-                id: area
-                anchors.fill: parent
-
-                onPressed: {
-                    if (!flickableArea.enableFlick) {
-                        canvas.lastX = mouseX;
-                        canvas.lastY = mouseY;
-                    }
-                }
-
-                onPositionChanged: {
-                    if (!flickableArea.enableFlick) {
-                        canvas.requestPaint();
-                    }
-                }
-            }
+            property real targetScale: 1.0
 
             WheelHandler {
                 id: wheelHandler
@@ -70,22 +41,17 @@ Flickable {
                 acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
 
                 onWheel: function(wheel) {
-                    const scaleFactor = 0.1;
-                    if (wheel.angleDelta.y > 0 && canvas.scale < 3.0) {
-                        canvas.scale += scaleFactor;
-                    } else if (wheel.angleDelta.y < 0 && canvas.scale > 0.3) {
-                        canvas.scale -= scaleFactor;
+                    const scaleStep = 0.05;
+                    const maxScale = 3.0;
+                    const minScale = 0.3;
+
+                    if (wheel.angleDelta.y > 0) {
+                        canvas.targetScale = Math.min(canvas.targetScale + scaleStep, maxScale);
+                    } else if (wheel.angleDelta.y < 0) {
+                        canvas.targetScale = Math.max(canvas.targetScale - scaleStep, minScale);
                     }
-                }
-            }
 
-            onPaint: {
-                var ctx = getContext("2d");
-
-                if (isFirstDraw) {
-                    ctx.fillStyle = backgroundColor;
-                    ctx.fillRect(0, 0, width, height);
-                    isFirstDraw = false;
+                    canvas.scale = canvas.targetScale;
                 }
             }
         }
