@@ -1,4 +1,5 @@
 #include "CanvasGL.hpp"
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLFramebufferObject>
 #include <QQuickWindow>
 #include <QSGSimpleTextureNode>
@@ -25,18 +26,66 @@ CanvasGL::CanvasGL(const int &w, const int &h, const QColor &background, QQuickI
 
 CanvasGL::~CanvasGL()
 {
-    delete m_fbo;
-    delete m_shaderProgram;
+    auto *context = QOpenGLContext::currentContext();
+    if (context) {
+        auto *glFuncs = context->extraFunctions();
+        if (m_geometryInitialized) {
+            if (m_vao) {
+                glFuncs->glDeleteVertexArrays(1, &m_vao);
+                m_vao = 0;
+            }
+            if (m_vbo) {
+                glFuncs->glDeleteBuffers(1, &m_vbo);
+                m_vbo = 0;
+            }
+        }
+    }
+
+    if (m_fbo) {
+        delete m_fbo;
+        m_fbo = nullptr;
+    }
+    if (m_shaderProgram) {
+        delete m_shaderProgram;
+        m_shaderProgram = nullptr;
+    }
+}
+
+void CanvasGL::initializeGL()
+{
+    auto *glFuncs = QOpenGLContext::currentContext()->extraFunctions();
+
+    glFuncs->glGenVertexArrays(1, &m_vao);
+    glFuncs->glGenBuffers(1, &m_vbo);
+
+    GLfloat vertices[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+
+    glFuncs->glBindVertexArray(m_vao);
+
+    glFuncs->glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glFuncs->glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glFuncs->glEnableVertexAttribArray(0);
+    glFuncs->glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid *)0);
+
+    glFuncs->glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glFuncs->glBindVertexArray(0);
+
+    m_geometryInitialized = true;
 }
 
 QSGNode *CanvasGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *data)
 {
     Q_UNUSED(data);
 
-    QOpenGLFunctions *glFuncs = QOpenGLContext::currentContext()->functions();
+    auto *glFuncs = QOpenGLContext::currentContext()->extraFunctions();
     if (!glFuncs) {
         qWarning() << "OpenGL context is not valid!";
         return nullptr;
+    }
+
+    if (!m_geometryInitialized) {
+        initializeGL();
     }
 
     GLint maxTextureSize;
@@ -68,14 +117,17 @@ QSGNode *CanvasGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *data)
         glFuncs->glEnable(GL_SCISSOR_TEST);
         glFuncs->glScissor(0, 0, m_fboSize.width(), m_fboSize.height());
         glFuncs->glViewport(0, 0, m_fboSize.width() * m_scale, m_fboSize.height() * m_scale);
-        glFuncs->glClearColor(m_backgroundColor.redF(), m_backgroundColor.greenF(), m_backgroundColor.blueF(),
-                              m_backgroundColor.alphaF());
+        glFuncs->glClearColor(m_backgroundColor.redF(), m_backgroundColor.greenF(), m_backgroundColor.blueF(), m_opacity);
         glFuncs->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glFuncs->glDisable(GL_SCISSOR_TEST);
 
         if (m_shaderProgram && m_shaderProgram->bind()) {
-            m_shaderProgram->setUniformValue("color", QVector3D(1.0f, 1.0f, 1.0f));
+            m_shaderProgram->setUniformValue(
+                "color", QVector3D(m_backgroundColor.redF(), m_backgroundColor.greenF(), m_backgroundColor.blueF()));
             m_shaderProgram->setUniformValue("opacity", m_opacity);
+
+            glFuncs->glBindVertexArray(m_vao);
+            glFuncs->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             m_shaderProgram->release();
         }
@@ -83,6 +135,7 @@ QSGNode *CanvasGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *data)
         m_fbo->release();
 
         auto texture = QNativeInterface::QSGOpenGLTexture::fromNative(m_fbo->texture(), window(), m_fboSize);
+        textureNode->setFiltering(QSGTexture::Linear);
         textureNode->setTexture(texture);
         textureNode->setRect(boundingRect());
     }
@@ -119,6 +172,9 @@ void CanvasGL::setScale(const qreal &scale)
 
     if (!qFuzzyCompare(m_scale, clampedScale)) {
         m_scale = clampedScale;
+
+        m_fboSize = QSize(m_fboSize.width() * m_scale, m_fboSize.height() * m_scale);
+
         emit scaleChanged();
         update();
     }
