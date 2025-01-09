@@ -23,7 +23,6 @@ class CanvasGL : public QQuickItem
 
         void setBackgroundColor(const QColor &color);
         void setScale(const qreal &scale);
-        void setOpacity(const float &opacity);
 
         qreal scale() const { return m_scale; }
         QColor backgroundColor() const { return m_backgroundColor; }
@@ -39,7 +38,7 @@ class CanvasGL : public QQuickItem
         QOpenGLFramebufferObject *m_fbo = nullptr;
         QOpenGLShaderProgram *m_shaderProgram = nullptr;
 
-        QColor m_backgroundColor = QColor(255, 255, 255, 255);
+        QColor m_backgroundColor = QColor(255, 255, 255);
         qreal m_scale = 1.0;
         QSize m_fboSize;
 
