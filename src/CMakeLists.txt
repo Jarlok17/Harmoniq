@@ -10,6 +10,7 @@ set(PROJECT_SOURCES
     Application.cpp
     core.qrc
     styles/StyleResources.qrc
+    shaders/shaders.qrc
 )
 
 qt_add_executable(${PROJECT_NAME}
