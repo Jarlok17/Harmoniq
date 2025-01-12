@@ -6,7 +6,6 @@ find_package(Qt6 COMPONENTS Core Widgets Qml Quick QuickControls2 OpenGL REQUIRE
 set(PROJECT_SOURCES
     CanvasGL.hpp 
     CanvasGL.cpp
-    layer.qrc
 )
 
 add_library(layer OBJECT
