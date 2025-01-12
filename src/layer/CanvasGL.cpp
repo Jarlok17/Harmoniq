@@ -57,20 +57,20 @@ void CanvasGL::initializeGL(QOpenGLContext *currentContext)
 
     auto *glFuncs = currentContext->extraFunctions();
 
-    QFile vertexShaderFile(":/shaders/canvas.vert");
+    QFile vertexShaderFile(":/shaders/vert/canvas.glsl");
     if (!vertexShaderFile.exists()) {
         qWarning() << "Vertex shader file does not exist: :/shaders/canvas.vert";
     }
 
-    QFile fragmentShaderFile(":/shaders/canvas.frag");
+    QFile fragmentShaderFile(":/shaders/frag/canvas.glsl");
     if (!fragmentShaderFile.exists()) {
         qWarning() << "Fragment shader file does not exist: :/shaders/canvas.frag";
     }
 
-    if (!m_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/canvas.vert")) {
+    if (!m_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vert/canvas.glsl")) {
         qWarning() << "Failed to add vertex shader: " << m_shaderProgram->log();
     }
-    if (!m_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/canvas.frag")) {
+    if (!m_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/frag/canvas.glsl")) {
         qWarning() << "Failed to add fragment shader: " << m_shaderProgram->log();
     }
 
