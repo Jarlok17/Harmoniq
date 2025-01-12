@@ -25,14 +25,6 @@ Flickable {
             opacity: 1.0
             anchors.centerIn: parent
 
-            transform: Scale {
-                id: canvasScale
-                origin.x: canvas.width / 2
-                origin.y: canvas.height / 2
-                xScale: canvas.scale
-                yScale: canvas.scale
-            }
-
             property real targetScale: 1.0
 
             WheelHandler {
@@ -53,6 +45,14 @@ Flickable {
 
                     canvas.scale = canvas.targetScale;
                 }
+            }
+
+            transform: Scale {
+                id: canvasScale
+                origin.x: canvas.width / 2      
+                origin.y: canvas.height / 2
+                xScale: canvas.scale
+                yScale: canvas.scale
             }
         }
     }
