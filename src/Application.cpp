@@ -1,8 +1,5 @@
-#include <QApplication>
-#include <QQmlApplicationEngine>
-#include <QQuickStyle>
-
-#include "layer/CanvasGL.hpp"
+#include "../configs/precompiled.hpp"
+#include "layer/LayerManager.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -16,7 +13,7 @@ int main(int argc, char *argv[])
     engine.addImportPath("qrc:/Styles");
 
     // registre type layer
-    qmlRegisterType<harmoniq::canvas::CanvasGL>("Harmoniq_backend", 1, 0, "CanvasGL");
+    qmlRegisterType<harmoniq::layer::LayerManager>("Harmoniq_backend", 1, 0, "LayerManager");
 
     const QUrl url(QStringLiteral("qrc:/Qml/main.qml"));
     QObject::connect(
