@@ -31,4 +31,29 @@ std::shared_ptr<Layer> LayerManager::getCurrentLayer(const int &index) const
     }
     return nullptr;
 }
+
+QImage LayerManager::getThumbnail(const int &index) const
+{
+    if (index >= 0 && index < m_layers.size()) {
+        return m_layers[index]->thumbnail();
+    }
+    return QImage();
+}
+
+bool LayerManager::isLayerLocked(const int &index) const
+{
+    if (index >= 0 && index < m_layers.size()) {
+        return m_layers[index]->isLocked();
+    }
+    return false;
+}
+
+void LayerManager::setLayerLocked(const int &index, const bool &locked)
+{
+    if (index >= 0 && index < m_layers.size()) {
+        m_layers[index]->setLocked(locked);
+        emit layersChanged();
+    }
+}
+
 }} // namespace harmoniq::layer
