@@ -14,6 +14,10 @@ class LayerManager : public QObject
 
         Q_INVOKABLE void addLayer(const QString &lname, const QColor &background = QColor(255, 255, 255));
         Q_INVOKABLE void removeLayer(const int &index);
+        Q_INVOKABLE bool isLayerLocked(const int &index) const;
+        Q_INVOKABLE void setLayerLocked(const int &index, const bool &locked);
+
+        Q_INVOKABLE QImage getThumbnail(const int &index) const;
         Q_INVOKABLE std::shared_ptr<Layer> getCurrentLayer(const int &index) const;
         Q_INVOKABLE QStringList getLayerNames() const;
 
