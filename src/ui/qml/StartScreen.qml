@@ -129,7 +129,6 @@ Rectangle {
 
                             dialogNewImage.close();
                             startScreen.visible = false;
-                            canvasLoader.visible = true;
                             topToolBarLoader.visible = true;
                             leftBarLoader.visible = true;
 
