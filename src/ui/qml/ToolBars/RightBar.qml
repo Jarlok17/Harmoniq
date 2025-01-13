@@ -1,90 +1,122 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+
+import Harmoniq 1.0
 import Harmoniq_backend 1.0
 
 Rectangle {
     id: rightBar
-    width: 250
+    width: (Qt.platform.os === "android" || Qt.platform.os === "ios") ? Screen.width * 0.1 : Screen.width * 0.16
     height: parent.height
-    color: "#f0f0f0"
+    color: Themes.currentTheme.background
+    border.color: Qt.darker(Themes.currentTheme.background, 0.5)
 
-    LayersModel { // Модель шарів
-        id: layerModel
+    property bool isVisible: false
+    property real hiddenX: parent.width
+    property real visibleX: parent.width - width
+
+    x: isVisible ? visibleX : hiddenX
+
+    LayerManager {
+        id: layerManager
+        Component.onCompleted: console.log("LayerManager created successfuly")
     }
 
-    Column {
-        anchors.fill: parent
-        spacing: 10
+    Rectangle {
+        id: layerContainer
+        width: rightBar.width
+        height: rightBar.height / 3
+        color: Themes.currentTheme.background
+        border.color: Themes.currentTheme.primary
+        anchors.bottom: rightBar.bottom
 
-        // Верхня частина (може використовуватися для інших функцій)
         Rectangle {
-            id: upperSection
-            height: parent.height / 2
-            width: parent.width
-            color: "#e0e0e0"
-            Text {
-                anchors.centerIn: parent
-                text: "Інші елементи управління"
-            }
-        }
+            id: layerContainerMenu
+            width: layerContainer.width
+            height: 50
+            color: Themes.currentTheme.background
+            border.color: Themes.currentTheme.primary
 
-        // Нижня частина для відображення шарів
-        Rectangle {
-            id: lowerSection
-            height: parent.height / 2
-            width: parent.width
-            color: "#d0d0d0"
-
-            Column {
-                anchors.fill: parent
+            Row {
                 spacing: 10
+                anchors.centerIn: parent
 
-                Text {
-                    text: "Шари"
-                    font.pixelSize: 16
-                    anchors.horizontalCenter: parent.horizontalCenter
+                Button {
+                    id: button
+                    text: "+"
+                    background: Rectangle {
+                        color: button.down ? "lightblue" : "blue"
+                        radius: 10
+                        border.color: "black"
+                    }
+                    onClicked: {
+                        layerManager.addLayer("Новий шар")
+                        console.log("Add new layer");
+                    }
                 }
 
-                ListView {
-                    id: layersList
-                    model: layerModel
-                    delegate: Item {
-                        width: parent.width
-                        height: 40
-
-                        Row {
-                            spacing: 10
-
-                            Text {
-                                text: layerName
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            Button {
-                                text: "⬆"
-                                onClicked: layerModel.moveLayerUp(index)
-                            }
-
-                            Button {
-                                text: "⬇"
-                                onClicked: layerModel.moveLayerDown(index)
-                            }
+                Button {
+                    text: "---"
+                    onClicked: {
+                        if (layersList.currentIndex >= 0) {
+                            layerManager.removeLayer(layersList.currentIndex)
+                            console.log("Remove layer");
                         }
                     }
                 }
+            }
+        }
 
-                Row {
-                    spacing: 10
-                    Button {
-                        text: "Додати шар"
-                        onClicked: root.addLayer()
-                    }
-                    Button {
-                        text: "Видалити шар"
-                        onClicked: root.removeLayer(layersList.currentIndex)
-                    }
+        ListView {
+            id: layersList
+            width: layerContainer.width
+            height: layerContainer.height - layerContainerMenu.height
+            model: layerManager.getLayerNames()
+
+            delegate: Rectangle {
+                width: parent.width
+                height: 40
+                color: ListView.isCurrentItem ? "lightblue" : "white"
+                border.color: "black"
+
+                Text {
+                    anchors.centerIn: parent
+                    text: modelData
                 }
             }
+        }
+    }
+
+    Behavior on x {
+        NumberAnimation {
+            duration: 300
+            easing.type: Easing.InOutQuad
+        }
+    }
+
+    Button {
+        id: toggleButton
+        width: 40
+        height: 100
+        anchors.verticalCenter: rightBar.verticalCenter
+        anchors.right: rightBar.left
+
+        property string initialText: "▶"
+        text: initialText
+
+        background: Rectangle {
+            color: currentTheme.background
+            border.color: currentTheme.accent
+            radius: 4
+        }
+
+        onClicked: {
+            rightBar.isVisible = !rightBar.isVisible
+            text = rightBar.isVisible ? "▶" : "◀"
+        }
+
+        Component.onCompleted: {
+            text = rightBar.isVisible ? "▶" : "◀"
         }
     }
 }
