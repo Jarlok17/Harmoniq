@@ -131,6 +131,7 @@ Rectangle {
                             startScreen.visible = false;
                             topToolBarLoader.visible = true;
                             leftBarLoader.visible = true;
+                            rightBarLoader.visible = true;
 
                             console.log("Creating new image with dimensions:", canvasWidth, canvasHeight, "and color:", canvasBackgroundColor);
                             startScreen.newImageCreated(canvasWidth, canvasHeight, canvasBackgroundColor);
