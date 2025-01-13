@@ -1,5 +1,6 @@
-#include "../configs/precompiled.hpp"
 #include "Layer.hpp"
+
+#include "../configs/precompiled.hpp"
 
 namespace harmoniq { namespace layer {
 
@@ -78,6 +79,14 @@ void Layer::initializeGL(QOpenGLContext *currentContext)
     glFuncs->glBindVertexArray(0);
 
     m_geometryInitialized = true;
+}
+
+void Layer::updateThumbnail()
+{
+    if (m_fbo) {
+        QImage image = m_fbo->toImage();
+        setThumbnail(image.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    }
 }
 
 QSGNode *Layer::updatePaintNode(QSGNode *node, UpdatePaintNodeData *data)
@@ -181,6 +190,22 @@ void Layer::setScale(const qreal &scale)
 
         emit scaleChanged();
         update();
+    }
+}
+
+void Layer::setThumbnail(const QImage &thumbnail)
+{
+    if (m_thumbnail != thumbnail) {
+        m_thumbnail = thumbnail;
+        emit thumbnailChanged();
+    }
+}
+
+void Layer::setLocked(bool locked)
+{
+    if (m_locked != locked) {
+        m_locked = locked;
+        emit lockedChanged();
     }
 }
 
