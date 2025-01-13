@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="UI/">
-        <file>Canvas.qml</file>
         <file>StartScreen.qml</file>
 
         <file alias="ToolBars/LeftBar.qml">ToolBars/LeftBar.qml</file>
