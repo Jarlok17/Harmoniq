@@ -47,15 +47,6 @@ ApplicationWindow {
         visible: false 
     }
     
-    //Canvas 
-    Loader {
-        id: canvasLoader
-        z: -3
-        source: "qrc:/UI/Canvas.qml"
-        anchors.fill: parent
-        visible: false 
-    }
-    
     //Left toolbar
     Loader {
         id: leftBarLoader
