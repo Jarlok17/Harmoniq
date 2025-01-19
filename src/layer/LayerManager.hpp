@@ -1,31 +1,42 @@
 #pragma once
 
+#include "../configs/precompiled.hpp"
 #include "Layer.hpp"
 
 namespace harmoniq { namespace layer {
-class LayerManager : public QObject
+class LayerManager : public QAbstractListModel
 {
         Q_OBJECT
 
     public:
-        explicit LayerManager(QObject *parent = nullptr);
-        LayerManager(const LayerManager &) = delete;
-        LayerManager(LayerManager &&) = delete;
+        enum LayerRoles {
+            NameRole = Qt::UserRole + 1,
+            LockedRole,
+            WidthRole,
+            HeightRole,
+            ColorRole
+        };
 
-        Q_INVOKABLE void addLayer(const QString &lname, const QColor &background = QColor(255, 255, 255));
+        explicit LayerManager(QObject *parent = nullptr);
+        ~LayerManager();
+
+        int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+        QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+        QHash<int, QByteArray> roleNames() const override;
+
+        Q_INVOKABLE void addLayer(const QString &lname, const int &w, const int &h, const QColor &background,
+                                  const bool &locked = false);
         Q_INVOKABLE void removeLayer(const int &index);
         Q_INVOKABLE bool isLayerLocked(const int &index) const;
         Q_INVOKABLE void setLayerLocked(const int &index, const bool &locked);
 
-        Q_INVOKABLE QImage getThumbnail(const int &index) const;
-        Q_INVOKABLE std::shared_ptr<Layer> getCurrentLayer(const int &index) const;
-        Q_INVOKABLE QStringList getLayerNames() const;
-
-    signals:
-        void layersChanged();
-
     private:
-        QVector<std::shared_ptr<Layer>> m_layers;
-        QStringList m_layerNames;
+        struct LayerData
+        {
+                QString name;
+                bool locked = false;
+                std::shared_ptr<Layer> layer;
+        };
+        QVector<LayerData> m_layers;
 };
 }} // namespace harmoniq::layer
