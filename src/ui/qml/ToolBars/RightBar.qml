@@ -15,12 +15,10 @@ Rectangle {
     property real hiddenX: parent.width
     property real visibleX: parent.width - width
 
-    x: isVisible ? visibleX : hiddenX
+    property int layerWidth: 800 
+    property int layerHeight: 600
 
-    LayerManager {
-        id: layerManager
-        Component.onCompleted: console.log("LayerManager created successfuly")
-    }
+    x: isVisible ? visibleX : hiddenX
 
     Rectangle {
         id: layerContainer
@@ -36,6 +34,7 @@ Rectangle {
             height: 50
             color: Themes.currentTheme.background
             border.color: Themes.currentTheme.primary
+            anchors.top: layerContainer.top
 
             Row {
                 spacing: 10
@@ -50,8 +49,7 @@ Rectangle {
                         border.color: "black"
                     }
                     onClicked: {
-                        layerManager.addLayer("Новий шар")
-                        console.log("Add new layer");
+                        layerManager.addLayer("Новий шар", rightBar.layerWidth, rightBar.layerHeight, Qt.rgba(0, 0, 0, 0))
                     }
                 }
 
@@ -60,7 +58,6 @@ Rectangle {
                     onClicked: {
                         if (layersList.currentIndex >= 0) {
                             layerManager.removeLayer(layersList.currentIndex)
-                            console.log("Remove layer");
                         }
                     }
                 }
@@ -71,17 +68,33 @@ Rectangle {
             id: layersList
             width: layerContainer.width
             height: layerContainer.height - layerContainerMenu.height
-            model: layerManager.getLayerNames()
-
+            model: layerManager ? layerManager : undefined
+            Component.onCompleted: {
+                //console.log("RightBar.qml: layerManager = ", layerManager); 
+            }
+            anchors.top: layerContainerMenu.bottom
             delegate: Rectangle {
                 width: parent.width
                 height: 40
                 color: ListView.isCurrentItem ? "lightblue" : "white"
                 border.color: "black"
+                
+                Row {
+                    anchors.fill: parent
+                    spacing: 10
+                    /* 
+                    Image {
+                        source: Qt.resolvedUrl(thumbnail)
+                        width: 40
+                        height: 40
+                    }*/
+                    Text {
+                        text: name
+                    }
 
-                Text {
-                    anchors.centerIn: parent
-                    text: modelData
+                    Text {
+                        text: locked ? "Locked" : "Unlocked"
+                    }
                 }
             }
         }
