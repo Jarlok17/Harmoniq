@@ -13,10 +13,18 @@ ApplicationWindow {
     height: Screen.height
 
     property var currentTheme: Themes.darkTheme
-    color: currentTheme.background
+    color: "transparent" //currentTheme.background
     Material.theme: currentTheme === Themes.darkTheme ? Material.Dark : Material.Light
     Material.primary: currentTheme.primary
     Material.accent: currentTheme.accent
+    
+    Rectangle {
+        id: windowBackground
+        width: root.width
+        height: root.height
+        z: -3
+        color: currentTheme.background
+    }
 
     //Start screen 
     Loader {
@@ -64,6 +72,16 @@ ApplicationWindow {
         anchors.right: parent.right
         anchors.top: topToolBarLoader.bottom
         anchors.bottom: parent.bottom
+        visible: false
+    }
+
+    //layer loader 
+    Loader {
+        id: layerLoader
+        z: -1
+        source: "qrc:/UI/Layer.qml"
+        anchors.centerIn: parent
+        anchors.fill: parent
         visible: false
     }
 }
