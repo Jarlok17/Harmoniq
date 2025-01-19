@@ -5,7 +5,6 @@ find_package(Qt6 COMPONENTS Core Widgets Qml Quick QuickControls2 OpenGL REQUIRE
 
 set(PROJECT_SOURCES
     platform.hpp
-    debug.hpp
 )
 
 set(PCH_HEADER precompiled.hpp)
