@@ -13,15 +13,12 @@ Rectangle {
     property int canvasHeight: 600
     property string canvasBackgroundColor: "White"
 
-    signal newImageCreated(int width, int height, string color)
-
     Column {
         id: contentColumn
         anchors.centerIn: parent
         spacing: 20
         width: parent.width * 0.8
 
-        // Заголовок
         Text {
             text: "Harmoniq"
             font.pixelSize: Math.min(parent.width, parent.height) * 0.2
@@ -31,7 +28,6 @@ Rectangle {
             horizontalAlignment: Text.AlignHCenter
         }
 
-        // Кнопки
         Button {
             text: "Create New Image"
             font.pixelSize: Math.min(parent.width, parent.height) * 0.05
@@ -62,9 +58,14 @@ Rectangle {
     FileDialog {
         id: fileDialog
         title: "Open a Project"
+    }
+
+    ColorDialog {
+        id: colorDialog 
+        title: "Select the color..."
         onAccepted: {
-            startScreen.visible = false;
-            canvasLoader.visible = true;
+            selectedColor.color = colorDialog.selectedColor;
+            canvasBackgroundColor = colorDialog.selectedColor;
         }
     }
 
@@ -79,10 +80,6 @@ Rectangle {
             color: Themes.currentTheme.background
             radius: 10
         }
-
-        property alias imageWidth: widthField.text
-        property alias imageHeight: heightField.text
-        property alias selectedBgColor: bgColor.currentText
 
         contentItem: Column {
             spacing: 10
@@ -112,10 +109,22 @@ Rectangle {
                 text: "Background Color:"
             }
 
-            ComboBox {
-                id: bgColor
-                model: ["White", "Black", "Transparent"]
-            }
+            Row {
+                spacing: 10
+                Button {
+                    id: selectColor 
+                    text: "select color"
+                    onClicked: {
+                        colorDialog.open()
+                    }
+                } 
+                Rectangle {
+                    id: selectedColor
+                    width: 50
+                    height: 50
+                    color: canvasBackgroundColor
+                }
+            }            
 
             Row {
                 spacing: 10
@@ -125,16 +134,16 @@ Rectangle {
                         if (parseInt(widthField.text) > 0 && parseInt(heightField.text) > 0) {
                             canvasWidth = parseInt(widthField.text);
                             canvasHeight = parseInt(heightField.text);
-                            canvasBackgroundColor = bgColor.currentText;
 
                             dialogNewImage.close();
                             startScreen.visible = false;
                             topToolBarLoader.visible = true;
                             leftBarLoader.visible = true;
                             rightBarLoader.visible = true;
-
+                            layerLoader.visible = true;
+                            
+                            layerManager.addLayer("background", canvasWidth, canvasHeight, canvasBackgroundColor, true);
                             console.log("Creating new image with dimensions:", canvasWidth, canvasHeight, "and color:", canvasBackgroundColor);
-                            startScreen.newImageCreated(canvasWidth, canvasHeight, canvasBackgroundColor);
                         } else {
                             console.log("Invalid dimensions");
                         }
