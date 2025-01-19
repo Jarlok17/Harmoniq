@@ -1,3 +1,5 @@
+#include <qsgrendererinterface.h>
+
 #include "../configs/precompiled.hpp"
 #include "layer/LayerManager.hpp"
 
@@ -11,9 +13,12 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/Styles");
-
     // registre type layer
-    qmlRegisterType<harmoniq::layer::LayerManager>("Harmoniq_backend", 1, 0, "LayerManager");
+    qmlRegisterType<harmoniq::layer::Layer>("Harmoniq_backend", 1, 0, "Layer");
+
+    // root context
+    harmoniq::layer::LayerManager layerManager;
+    engine.rootContext()->setContextProperty("layerManager", &layerManager);
 
     const QUrl url(QStringLiteral("qrc:/Qml/main.qml"));
     QObject::connect(
