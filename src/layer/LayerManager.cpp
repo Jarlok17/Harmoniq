@@ -31,6 +31,8 @@ QVariant LayerManager::data(const QModelIndex &index, int role) const
         return layer.layer->height();
     case ColorRole:
         return layer.layer->backgroundColor();
+    case VisibleRole:
+        return layer.visible;
     default:
         return QVariant();
     }
@@ -39,11 +41,12 @@ QVariant LayerManager::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> LayerManager::roleNames() const
 {
     return {
-        {  NameRole,        "name"},
-        {LockedRole,      "locked"},
-        { WidthRole,  "LayerWidth"},
-        {HeightRole, "LayerHeight"},
-        { ColorRole,  "LayerColor"}
+        {   NameRole,         "name"},
+        { LockedRole,       "locked"},
+        {  WidthRole,   "LayerWidth"},
+        { HeightRole,  "LayerHeight"},
+        {  ColorRole,   "LayerColor"},
+        {VisibleRole, "LayerVisible"}
     };
 }
 
@@ -53,8 +56,10 @@ void LayerManager::addLayer(const QString &lname, const int &w, const int &h, co
     LayerData newLayer;
     newLayer.name = lname;
     newLayer.locked = locked;
+    newLayer.visible = true;
     newLayer.layer = std::make_shared<Layer>();
     newLayer.layer->setWidth(w);
+    newLayer.layer->setVisible(newLayer.visible);
     newLayer.layer->setHeight(h);
     newLayer.layer->setBackgroundColor(background);
     m_layers.append(newLayer);
@@ -74,6 +79,18 @@ void LayerManager::removeLayer(const int &index)
     }
 }
 
+void LayerManager::moveLayer(const int &from, const int &to)
+{
+    if (from < 0 || from >= m_layers.size() || to < 0 || to >= m_layers.size() || from == to) {
+        return;
+    }
+
+    beginMoveRows(QModelIndex(), from, from, QModelIndex(), to > from ? to + 1 : to);
+    m_layers.move(from, to);
+    endMoveRows();
+    qDebug() << "Шар переміщено з " << from << " на " << to;
+}
+
 bool LayerManager::isLayerLocked(const int &index) const
 {
     if (index >= 0 && index < m_layers.size()) {
@@ -87,6 +104,15 @@ void LayerManager::setLayerLocked(const int &index, const bool &locked)
     if (index >= 0 && index < m_layers.size()) {
         m_layers[index].locked = locked;
         emit dataChanged(this->index(index), this->index(index), {LockedRole});
+    }
+}
+
+void LayerManager::setLayerVisible(const int &index, const bool &visible)
+{
+    if (index >= 0 && index < m_layers.size()) {
+        m_layers[index].visible = visible;
+        qDebug() << "Layer visibility changed for index " << index << ": " << visible;
+        emit dataChanged(this->index(index), this->index(index), {VisibleRole});
     }
 }
 }} // namespace harmoniq::layer
