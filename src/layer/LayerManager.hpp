@@ -14,7 +14,8 @@ class LayerManager : public QAbstractListModel
             LockedRole,
             WidthRole,
             HeightRole,
-            ColorRole
+            ColorRole,
+            VisibleRole
         };
 
         explicit LayerManager(QObject *parent = nullptr);
@@ -27,14 +28,17 @@ class LayerManager : public QAbstractListModel
         Q_INVOKABLE void addLayer(const QString &lname, const int &w, const int &h, const QColor &background,
                                   const bool &locked = false);
         Q_INVOKABLE void removeLayer(const int &index);
+        Q_INVOKABLE void moveLayer(const int &from, const int &to);
         Q_INVOKABLE bool isLayerLocked(const int &index) const;
         Q_INVOKABLE void setLayerLocked(const int &index, const bool &locked);
+        Q_INVOKABLE void setLayerVisible(const int &index, const bool &visible);
 
     private:
         struct LayerData
         {
                 QString name;
                 bool locked = false;
+                bool visible = true;
                 std::shared_ptr<Layer> layer;
         };
         QVector<LayerData> m_layers;
