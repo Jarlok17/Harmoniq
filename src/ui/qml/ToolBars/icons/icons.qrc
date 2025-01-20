@@ -9,6 +9,13 @@
         <file alias="text-tool.svg">64x64/text-tool.svg</file>
         <file alias="zoom-in.svg">64x64/zoom-in.svg</file>
         <file alias="zoom-out.svg">64x64/zoom-out.svg</file>
+
+        <file alias="locked.png">64x64/locked.png</file>
+        <file alias="unlocked.png">64x64/unlocked.png</file>
+        <file alias="closed-eye.png">64x64/closed-eye.png</file>
+        <file alias="open-eye.png">64x64/open-eye.png</file>
+        <file alias="trash.png">64x64/trash.png</file>
+        <file alias="add.png">64x64/add.png</file>
     </qresource>
     <qresource prefix="Icons/32x32">
         <file alias="brush.svg">32x32/brush.svg</file>
