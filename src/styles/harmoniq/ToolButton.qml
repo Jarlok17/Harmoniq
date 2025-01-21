@@ -20,9 +20,8 @@ T.Button {
 
         Image {
             anchors.centerIn: parent
-            width: control.width * 0.6
-            height: control.width * 0.6
             source: iconSource
+            sourceSize: Qt.size(control.width * 0.6, control.width * 0.6)
         }
     }
 
