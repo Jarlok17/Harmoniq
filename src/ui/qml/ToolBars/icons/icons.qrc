@@ -1,14 +1,8 @@
 <RCC>
     <qresource prefix="Icons/64x64">
-        <file alias="brush.svg">64x64/brush.svg</file>
-        <file alias="color-fill.svg">64x64/color-fill.svg</file>
-        <file alias="dropper.svg">64x64/dropper.svg</file>
+        <file alias="brush.png">64x64/brush.png</file>
+        <file alias="color-fill.png">64x64/color-fill.png</file>
         <file alias="edit-pen.svg">64x64/edit-pen.svg</file>
-        <file alias="eraser.svg">64x64/eraser.svg</file>
-        <file alias="move-arrows.svg">64x64/move-arrows.svg</file>
-        <file alias="text-tool.svg">64x64/text-tool.svg</file>
-        <file alias="zoom-in.svg">64x64/zoom-in.svg</file>
-        <file alias="zoom-out.svg">64x64/zoom-out.svg</file>
 
         <file alias="locked.png">64x64/locked.png</file>
         <file alias="unlocked.png">64x64/unlocked.png</file>
@@ -16,6 +10,14 @@
         <file alias="open-eye.png">64x64/open-eye.png</file>
         <file alias="trash.png">64x64/trash.png</file>
         <file alias="add.png">64x64/add.png</file>
+        <file alias="up-arrow.png">64x64/up-arrow.png</file>
+        <file alias="down-arrow.png">64x64/down-arrow.png</file>
+        <file alias="color-picker.png">64x64/color-picker.png</file>
+        <file alias="add-brush.png">64x64/add-brush.png</file> 
+        <file alias="cursor.png">64x64/cursor.png</file>
+        <file alias="move-arrows.png">64x64/move-arrows.png</file>
+        <file alias="menu-brush.png">64x64/menu-brush.png</file> 
+        <file alias="menu-layer.png">64x64/menu-layer.png</file> 
     </qresource>
     <qresource prefix="Icons/32x32">
         <file alias="brush.svg">32x32/brush.svg</file>
