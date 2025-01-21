@@ -27,7 +27,7 @@ Item {
                 columns: 2
                 Repeater {
                     model: [
-                        "qrc:/Icons/64x64/brush.svg",
+                        "qrc:/Icons/64x64/brush.png",
                         "qrc:/Icons/64x64/edit-pen.svg"
                     ]
 
@@ -39,19 +39,12 @@ Item {
                 }
             }
 
-            Rectangle {
-                height: 1
-                width: parent.width * 0.9
-                color: Qt.lighter(currentTheme.background, 1.5)
-                Layout.alignment: Qt.AlignHCenter
-            }
-
             GridLayout {
                 columns: 2
                 Repeater {
                     model: [
-                        "qrc:/Icons/64x64/color-fill.svg",
-                        "qrc:/Icons/64x64/dropper.svg"
+                        "qrc:/Icons/64x64/color-fill.png",
+                        "qrc:/Icons/64x64/color-picker.png"
                     ]
 
                     delegate: ToolButton {
@@ -73,8 +66,7 @@ Item {
                 columns: 2
                 Repeater {
                     model: [
-                        "qrc:/Icons/64x64/move-arrows.svg",
-                        "qrc:/Icons/64x64/eraser.svg"
+                        "qrc:/Icons/64x64/move-arrows.png",
                     ]
 
                     delegate: ToolButton {
