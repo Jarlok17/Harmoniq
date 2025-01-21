@@ -21,21 +21,46 @@ Rectangle {
 
     x: isVisible ? visibleX : hiddenX
 
+    
     Rectangle {
-        id: layerContainer
+        id: colorContainer
         width: rightBar.width
-        height: rightBar.height / 3
+        height: 0
+        color: Themes.currentTheme.background
+        border.color: Themes.currentTheme.accent
+        anchors.top: rightBar.top
+
+        
+    }
+
+    
+    Rectangle {
+        id: bottomContainer
+        width: rightBar.width
+        height: rightBar.height / 2
         color: Themes.currentTheme.background
         border.color: Themes.currentTheme.primary
         anchors.bottom: rightBar.bottom
+        
+        
+        Rectangle {
+            id: layerContainerTopMenu
+            width: bottomContainer.width
+            height: 40
+            color: Themes.currentTheme.background
+            border.color: Qt.darker(Themes.currentTheme.background, 0.5)
+            anchors.top: bottomContainer.top
+        }
+        
 
         Rectangle {
-            id: layerContainerMenu
-            width: layerContainer.width
+            id: layerContainerBottomMenu
+            width: bottomContainer.width
             height: 50
             color: Themes.currentTheme.background
             border.color: Themes.currentTheme.primary
-            anchors.top: layerContainer.top
+            anchors.bottom: bottomContainer.bottom
+
 
             Rectangle {
                 id: addButton
@@ -49,7 +74,7 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: {
                         layerManager.addLayer("Новий шар", rightBar.layerWidth, rightBar.layerHeight, Qt.rgba(0, 0, 0, 0));
-                        console.log("New layer is added");
+                        //console.log("New layer is added");
                     }
                     Image {
                         anchors.centerIn: parent
@@ -67,23 +92,53 @@ Rectangle {
                 anchors.centerIn: parent
                 color: "transparent"
 
-                Button {
-                    text: "▲"
-                    onClicked: {
-                        if (layersList.currentIndex > 0) {
-                            layerManager.moveLayer(layersList.currentIndex, layersList.currentIndex - 1);
-                            layersList.currentIndex -= 1;
+                Rectangle {
+                    id: upArrowButton
+                    width: 40
+                    height: 40
+                    color: "transparent"
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            if (layersList.currentIndex > 0) {
+                                layerManager.moveLayer(layersList.currentIndex, layersList.currentIndex - 1);
+                                layersList.currentIndex -= 1;
+                            }
                         }
+                        Image {
+                            anchors.centerIn: parent
+                            source: "qrc:/Icons/64x64/up-arrow.png"
+                            sourceSize: Qt.size(32, 32)
+                        }
+                        cursorShape: Qt.PointingHandCursor 
                     }
                 }
+                
+                Rectangle {
+                    id: downArrowButton
+                    width: 40
+                    height: 40
+                    color: "transparent"
+                    anchors.left: upArrowButton.right
+                    anchors.verticalCenter: parent.verticalCenter
 
-                Button {
-                    text: "▼"
-                    onClicked: {
-                        if (layersList.currentIndex < layersList.count - 1 && layersList.currentIndex >= 0) {
-                            layerManager.moveLayer(layersList.currentIndex, layersList.currentIndex + 1);
-                            layersList.currentIndex += 1;
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            if (layersList.currentIndex < layersList.count - 1 && layersList.currentIndex >= 0) {
+                                layerManager.moveLayer(layersList.currentIndex, layersList.currentIndex + 1);
+                                layersList.currentIndex += 1;
+                            }
                         }
+                        Image {
+                            anchors.centerIn: parent
+                            source: "qrc:/Icons/64x64/down-arrow.png"
+                            sourceSize: Qt.size(32, 32)
+                        }
+                        cursorShape: Qt.PointingHandCursor 
                     }
                 }
             }
@@ -100,26 +155,27 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: {
                         layerManager.removeLayer(layersList.currentIndex);
-                        console.log("Layer deleted");
+                        //console.log("Layer deleted");
                     }
                     Image {
                         anchors.centerIn: parent
                         source: "qrc:/Icons/64x64/trash.png"
                         sourceSize: Qt.size(32, 32)
                     }
+                    cursorShape: Qt.PointingHandCursor
                 }
             }
         }
 
         ListView {
             id: layersList
-            width: layerContainer.width
-            height: layerContainer.height - layerContainerMenu.height
+            width: bottomContainer.width
+            height: bottomContainer.height - layerContainerBottomMenu.height - layerContainerTopMenu.height
             model: layerManager ? layerManager : undefined
-            anchors.top: layerContainerMenu.bottom
+            anchors.top: layerContainerTopMenu.bottom
             clip: true
             delegate: Rectangle {
-                width: parent.width
+                width: parent ? parent.width : rightBar.width
                 height: 40
                 color: Themes.currentTheme.background
                 border.color: ListView.isCurrentItem ? Themes.currentTheme.accent : Qt.darker(Themes.currentTheme.background, 0.5)
@@ -136,7 +192,7 @@ Rectangle {
                         acceptedButtons: Qt.LeftButton
                         onClicked: {
                             layerManager.setLayerVisible(index, !LayerVisible);
-                            console.log("Layer visibility:", !LayerVisible);
+                            //console.log("Layer visibility:", !LayerVisible);
                         }
                         Image {
                             anchors.centerIn: parent
@@ -159,7 +215,7 @@ Rectangle {
                         anchors.fill: parent
                         onClicked: {
                             layersList.currentIndex = index;
-                            console.log("Selected layer:", name);
+                            //console.log("Selected layer:", name);
                         }
 
                         cursorShape: Qt.PointingHandCursor 
@@ -183,7 +239,7 @@ Rectangle {
                         anchors.fill: parent
                         onClicked: {
                             layerManager.setLayerLocked(index, !locked);
-                            console.log("Layer locked:", !locked);
+                            //console.log("Layer locked:", !locked);
                         }
                         Image {
                             anchors.centerIn: parent
@@ -195,6 +251,20 @@ Rectangle {
                 }
             }
         }
+
+        
+        Rectangle {
+            id: brushContainer
+            width: rightBar.width 
+            height: rightBar.height / 2 
+            color: Themes.currentTheme.background
+            border.color: Qt.darker(Themes.currentTheme.background, 0.5)
+            visible: false
+
+            anchors.bottom: bottomContainer.bottom 
+
+        }
+        
     }
 
     Behavior on x {
@@ -203,30 +273,92 @@ Rectangle {
             easing.type: Easing.InOutQuad
         }
     }
-
-    Button {
-        id: toggleButton
-        width: 40
-        height: 100
+    
+    Column {
+        id: buttonColumn
+        spacing: 10 
         anchors.verticalCenter: rightBar.verticalCenter
         anchors.right: rightBar.left
+        width: 40
 
-        property string initialText: "▶"
-        text: initialText
+        Button {
+            id: toggleButton
+            width: buttonColumn.width
+            height: 80
 
-        background: Rectangle {
-            color: currentTheme.background
-            border.color: currentTheme.accent
-            radius: 4
+            property string initialText: "▶"
+            text: initialText
+
+            background: Rectangle {
+                color: currentTheme.background
+                border.color: currentTheme.accent
+                radius: 4
+            }
+
+            onClicked: {
+                rightBar.isVisible = !rightBar.isVisible
+                text = rightBar.isVisible ? "▶" : "◀"
+                brushButton.visible = rightBar.isVisible
+                layerButton.visible = rightBar.isVisible
+            }
+
+            Component.onCompleted: {
+                text = rightBar.isVisible ? "▶" : "◀"
+            }
         }
 
-        onClicked: {
-            rightBar.isVisible = !rightBar.isVisible
-            text = rightBar.isVisible ? "▶" : "◀"
+        Button {
+            id: brushButton
+            width: buttonColumn.width 
+            height: 50 
+            visible: false
+            
+            background: Rectangle {
+                color: currentTheme.background
+                border.color: currentTheme.accent
+                radius: 4
+            }
+
+            Image {
+                source: "qrc:/Icons/64x64/menu-brush.png"
+                sourceSize: Qt.size(32, 32)
+                anchors.centerIn: parent
+            }
+
+            onClicked: {
+                layersList.visible = false;
+                layerContainerBottomMenu.visible = false;
+                layerContainerTopMenu.visible = false;
+
+                brushContainer.visible = true;
+            }
         }
 
-        Component.onCompleted: {
-            text = rightBar.isVisible ? "▶" : "◀"
+        Button {
+            id: layerButton
+            width: buttonColumn.width 
+            height: 50
+            visible: false
+            
+            background: Rectangle {
+                color: currentTheme.background
+                border.color: currentTheme.accent
+                radius: 4
+            }
+
+            Image {
+                source: "qrc:/Icons/64x64/menu-layer.png"
+                sourceSize: Qt.size(32, 32)
+                anchors.centerIn: parent
+            }
+
+            onClicked: {
+                layersList.visible = true;
+                layerContainerBottomMenu.visible = true;
+                layerContainerTopMenu.visible = true;
+
+                brushContainer.visible = false;
+            }
         }
     }
 }
