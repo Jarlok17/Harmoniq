@@ -10,6 +10,7 @@
 #include <QColor>
 #include <QFile>
 #include <QGenericMatrix>
+#include <QPainterPath>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
@@ -19,13 +20,8 @@
 
 // Qt with OpengGl headers
 #include <QAbstractListModel>
-#include <QOffscreenSurface>
-#include <QOpenGLExtraFunctions>
-#include <QOpenGLFramebufferObject>
-#include <QOpenGLShaderProgram>
-#include <QQuickImageProvider>
+#include <QPainter>
 #include <QQuickItem>
+#include <QQuickPaintedItem>
 #include <QQuickWindow>
-#include <QSGGeometryNode>
 #include <QSGSimpleRectNode>
-#include <QSGSimpleTextureNode>
