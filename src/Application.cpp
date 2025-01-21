@@ -1,6 +1,6 @@
 #include <qsgrendererinterface.h>
 
-#include "../configs/precompiled.hpp"
+#include "configs/precompiled.hpp"
 #include "layer/LayerManager.hpp"
 
 int main(int argc, char *argv[])
