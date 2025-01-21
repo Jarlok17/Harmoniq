@@ -1,7 +1,17 @@
 #include "Layer.hpp"
 
 namespace harmoniq { namespace layer {
-Layer::Layer(QQuickItem *parent) : QQuickItem(parent), m_backgroundColor(Qt::white) { setFlag(ItemHasContents, true); }
+Layer::Layer(QQuickPaintedItem *parent) : QQuickPaintedItem(parent), m_backgroundColor(Qt::white)
+{
+    setFlag(ItemHasContents, true);
+    m_canvas = QImage(width(), height(), QImage::Format_ARGB32_Premultiplied);
+    m_canvas.fill(Qt::transparent);
+}
+
+void Layer::mousePressEvent(QMouseEvent *event) {}
+void Layer::mouseMoveEvent(QMouseEvent *event) {}
+
+void Layer::paint(QPainter *painter) { painter->fillRect(boundingRect(), m_backgroundColor); }
 
 void Layer::setBackgroundColor(const QColor &color)
 {
@@ -12,18 +22,12 @@ void Layer::setBackgroundColor(const QColor &color)
     }
 }
 
-QSGNode *Layer::updatePaintNode(QSGNode *node, UpdatePaintNodeData *data)
+void Layer::setThumbnail(const QImage &thumbnail)
 {
-    Q_UNUSED(data);
-
-    QSGSimpleRectNode *rectNode = static_cast<QSGSimpleRectNode *>(node);
-    if (!rectNode) {
-        rectNode = new QSGSimpleRectNode();
+    if (m_thumbnail != thumbnail) {
+        m_thumbnail = thumbnail;
+        emit thumbnailChanged();
+        update();
     }
-
-    rectNode->setRect(boundingRect());
-    rectNode->setColor(m_backgroundColor);
-
-    return rectNode;
 }
 }} // namespace harmoniq::layer
