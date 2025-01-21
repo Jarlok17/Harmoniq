@@ -111,7 +111,7 @@ void LayerManager::setLayerVisible(const int &index, const bool &visible)
 {
     if (index >= 0 && index < m_layers.size()) {
         m_layers[index].visible = visible;
-        qDebug() << "Layer visibility changed for index " << index << ": " << visible;
+        m_layers[index].layer->setVisible(visible);
         emit dataChanged(this->index(index), this->index(index), {VisibleRole});
     }
 }
