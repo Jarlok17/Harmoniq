@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 2.15
+import QtQuick.Dialogs
 
 import Harmoniq 1.0
 import Harmoniq_backend 1.0
@@ -19,6 +20,8 @@ Rectangle {
     property int layerWidth: 800 
     property int layerHeight: 600
 
+    property string currentMode: "layers"
+
     x: isVisible ? visibleX : hiddenX
 
     
@@ -33,7 +36,6 @@ Rectangle {
         
     }
 
-    
     Rectangle {
         id: bottomContainer
         width: rightBar.width
@@ -50,6 +52,7 @@ Rectangle {
             color: Themes.currentTheme.background
             border.color: Qt.darker(Themes.currentTheme.background, 0.5)
             anchors.top: bottomContainer.top
+            visible: rightBar.currentMode == "layers"
         }
         
 
@@ -60,7 +63,7 @@ Rectangle {
             color: Themes.currentTheme.background
             border.color: Themes.currentTheme.primary
             anchors.bottom: bottomContainer.bottom
-
+            visible: rightBar.currentMode == "layers"
 
             Rectangle {
                 id: addButton
@@ -74,7 +77,6 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: {
                         layerManager.addLayer("Новий шар", rightBar.layerWidth, rightBar.layerHeight, Qt.rgba(0, 0, 0, 0));
-                        //console.log("New layer is added");
                     }
                     Image {
                         anchors.centerIn: parent
@@ -155,7 +157,6 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: {
                         layerManager.removeLayer(layersList.currentIndex);
-                        //console.log("Layer deleted");
                     }
                     Image {
                         anchors.centerIn: parent
@@ -174,6 +175,7 @@ Rectangle {
             model: layerManager ? layerManager : undefined
             anchors.top: layerContainerTopMenu.bottom
             clip: true
+            visible: rightBar.currentMode == "layers"
             delegate: Rectangle {
                 width: parent ? parent.width : rightBar.width
                 height: 40
@@ -192,7 +194,6 @@ Rectangle {
                         acceptedButtons: Qt.LeftButton
                         onClicked: {
                             layerManager.setLayerVisible(index, !LayerVisible);
-                            //console.log("Layer visibility:", !LayerVisible);
                         }
                         Image {
                             anchors.centerIn: parent
@@ -215,7 +216,6 @@ Rectangle {
                         anchors.fill: parent
                         onClicked: {
                             layersList.currentIndex = index;
-                            //console.log("Selected layer:", name);
                         }
 
                         cursorShape: Qt.PointingHandCursor 
@@ -239,7 +239,6 @@ Rectangle {
                         anchors.fill: parent
                         onClicked: {
                             layerManager.setLayerLocked(index, !locked);
-                            //console.log("Layer locked:", !locked);
                         }
                         Image {
                             anchors.centerIn: parent
@@ -252,20 +251,117 @@ Rectangle {
             }
         }
 
-        
         Rectangle {
-            id: brushContainer
-            width: rightBar.width 
-            height: rightBar.height / 2 
+            id: brushTopPanel
+            width: bottomContainer.width
+            height: 50
             color: Themes.currentTheme.background
-            border.color: Qt.darker(Themes.currentTheme.background, 0.5)
-            visible: false
+            border.color: Qt.darker(Themes.currentTheme.background, 0.6)
+            anchors.top: bottomContainer.top
+            visible: rightBar.currentMode == "brushes"
 
-            anchors.bottom: bottomContainer.bottom 
+            Rectangle {
+                id: addBrushTile
+                width: 50
+                height: 50
+                color: Themes.currentTheme.background 
+                border.color: Qt.darker(Themes.currentTheme.background, 0.6)
+                anchors.verticalCenter: brushTopPanel.verticalCenter
+                anchors.right: brushTopPanel.right
 
+                Image {
+                    source: "qrc:/Icons/64x64/add-brush.png"
+                    anchors.centerIn: parent
+                    sourceSize: Qt.size(32, 32)
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: brushPopup.open()
+                }
+            }
+        }
+
+        ListView {
+            id: brushesList
+            width: bottomContainer.width
+            height: bottomContainer.height - brushTopPanel.height
+            model: brushManager ? brushManager : undefined
+            anchors.top: brushTopPanel.bottom
+            clip: true
+            visible: rightBar.currentMode == "brushes"
+
+            delegate: Rectangle {
+                width: parent.width
+                height: 64
+                Text {
+                    text: model.name
+                    anchors.centerIn: parent
+                }
+            }
+        }
+    }
+
+    Popup {
+        id: brushPopup
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        width: Screen.width
+        height: Screen.height
+        anchors.centerIn: Overlay.overlay
+
+        background: Rectangle {
+            color: Themes.currentTheme.background
+            border.color: Themes.currentTheme.accent
         }
         
+        Column {
+            id: brushSettings
+            width: brushPopup.width * 0.10
+            height: brushPopup.height
+
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            
+            Rectangle {
+                width: brushSettings.width
+                height: brushSettings.height
+                border.color: Qt.darker(Themes.currentTheme.background, 0.6)
+                color: Themes.currentTheme.background
+            }
+        }
+        Column {
+            id: valuesColumn
+            anchors.left: brushSettings.right
+
+            TextField {
+                id: brushName
+                placeholderText: "Назва пензля"
+            }
+
+            Button {
+                text: "Оберіть колір"
+                onClicked: colorPicker.open()
+            }
+            
+            Row {
+                spacing: 10
+
+                Button {
+                    text: "Створити"
+                    onClicked: brushPopup.close()
+                }
+                Button {
+                    text: "Закрити"
+                    onClicked: brushPopup.close()
+                }
+            }
+        }
     }
+
 
     Behavior on x {
         NumberAnimation {
@@ -326,11 +422,7 @@ Rectangle {
             }
 
             onClicked: {
-                layersList.visible = false;
-                layerContainerBottomMenu.visible = false;
-                layerContainerTopMenu.visible = false;
-
-                brushContainer.visible = true;
+                rightBar.currentMode = "brushes";
             }
         }
 
@@ -353,11 +445,7 @@ Rectangle {
             }
 
             onClicked: {
-                layersList.visible = true;
-                layerContainerBottomMenu.visible = true;
-                layerContainerTopMenu.visible = true;
-
-                brushContainer.visible = false;
+                rightBar.currentMode = "layers";
             }
         }
     }
