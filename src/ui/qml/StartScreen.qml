@@ -69,12 +69,13 @@ Rectangle {
         }
     }
 
-    Dialog {
+    Popup {
         id: dialogNewImage
         modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         visible: false
-        title: "New Image Settings"
-        anchors.centerIn: parent
+        anchors.centerIn: Overlay.overlay
 
         background: Rectangle {
             color: Themes.currentTheme.background
@@ -148,6 +149,7 @@ Rectangle {
                             console.log("Invalid dimensions");
                         }
                         dialogNewImage.visible = false;
+                        dialogNewImage.close();
                     }
                 }
                 Button {
