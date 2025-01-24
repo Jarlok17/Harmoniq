@@ -1,5 +1,6 @@
 #include <qsgrendererinterface.h>
 
+#include "brushes/BrushManager.hpp"
 #include "configs/precompiled.hpp"
 #include "layer/LayerManager.hpp"
 
@@ -18,7 +19,9 @@ int main(int argc, char *argv[])
 
     // root context
     harmoniq::layer::LayerManager layerManager;
+    harmoniq::brushes::BrushManager brushManager;
     engine.rootContext()->setContextProperty("layerManager", &layerManager);
+    engine.rootContext()->setContextProperty("brushManager", &brushManager);
 
     const QUrl url(QStringLiteral("qrc:/Qml/main.qml"));
     QObject::connect(
