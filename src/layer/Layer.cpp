@@ -1,17 +1,15 @@
 #include "Layer.hpp"
 
+#include "LayerRenderer.hpp"
+
 namespace harmoniq { namespace layer {
-Layer::Layer(QQuickPaintedItem *parent) : QQuickPaintedItem(parent), m_backgroundColor(Qt::white)
+
+QQuickFramebufferObject::Renderer *Layer::createRenderer() const
 {
-    setFlag(ItemHasContents, true);
-    m_canvas = QImage(width(), height(), QImage::Format_ARGB32_Premultiplied);
-    m_canvas.fill(Qt::transparent);
+    auto renderer = new LayerRenderer();
+    renderer->setBackgroundColor(m_backgroundColor);
+    return renderer;
 }
-
-void Layer::mousePressEvent(QMouseEvent *event) {}
-void Layer::mouseMoveEvent(QMouseEvent *event) {}
-
-void Layer::paint(QPainter *painter) { painter->fillRect(boundingRect(), m_backgroundColor); }
 
 void Layer::setBackgroundColor(const QColor &color)
 {
@@ -22,12 +20,15 @@ void Layer::setBackgroundColor(const QColor &color)
     }
 }
 
-void Layer::setThumbnail(const QImage &thumbnail)
+void Layer::setVisibility(const bool &visible)
 {
-    if (m_thumbnail != thumbnail) {
-        m_thumbnail = thumbnail;
-        emit thumbnailChanged();
+    if (m_visible != visible) {
+        m_visible = visible;
+        visibleChanged();
         update();
     }
 }
+
+QColor Layer::backgroundColor() const { return m_backgroundColor; }
+
 }} // namespace harmoniq::layer
