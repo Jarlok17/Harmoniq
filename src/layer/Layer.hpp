@@ -1,44 +1,31 @@
 #pragma once
 
-#include "../brushes/BrushInfo.hpp"
 #include "../configs/precompiled.hpp"
 
 namespace harmoniq { namespace layer {
 
-class Layer : public QQuickPaintedItem
+class Layer : public QQuickFramebufferObject
 {
         Q_OBJECT
 
         Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
-        Q_PROPERTY(QImage thumbnail READ thumbnail WRITE setThumbnail NOTIFY thumbnailChanged)
-
+        Q_PROPERTY(bool isVisible READ isVisible WRITE setVisibility NOTIFY visibleChanged)
     public:
-        explicit Layer(QQuickPaintedItem *parent = nullptr);
+        Layer() = default;
+        Renderer *createRenderer() const override;
 
         void setBackgroundColor(const QColor &color);
-        void setBrushInfo(const brushes::BrushInfo &info) { m_brushInfo = info; }
-        void setThumbnail(const QImage &thumbnail);
+        void setVisibility(const bool &visible);
 
-        QColor backgroundColor() const { return m_backgroundColor; }
-        QImage thumbnail() const { return m_thumbnail; }
-        const brushes::BrushInfo &brushInfo() const { return m_brushInfo; }
-
+        QColor backgroundColor() const;
+        bool isVisible() const { return m_visible; }
     signals:
         void backgroundColorChanged();
-        void thumbnailChanged();
-
-    protected:
-        void paint(QPainter *painter) override;
-        void mousePressEvent(QMouseEvent *event) override;
-        void mouseMoveEvent(QMouseEvent *event) override;
+        void visibleChanged();
 
     private:
-        QImage m_canvas;
-        QColor m_backgroundColor;
-
-        QImage m_thumbnail;
-
-        brushes::BrushInfo m_brushInfo;
+        QColor m_backgroundColor = QColor(255, 255, 255, 255);
+        bool m_visible = true;
 };
 
 }} // namespace harmoniq::layer
