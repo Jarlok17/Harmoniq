@@ -20,8 +20,12 @@
 
 // Qt with OpengGl headers
 #include <QAbstractListModel>
+#include <QOpenGLContext>
+#include <QOpenGLExtraFunctions>
+#include <QOpenGLFramebufferObject>
+#include <QOpenGLShaderProgram>
 #include <QPainter>
+#include <QQuickFramebufferObject>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QQuickWindow>
-#include <QSGSimpleRectNode>
