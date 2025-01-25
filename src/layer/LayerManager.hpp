@@ -32,6 +32,7 @@ class LayerManager : public QAbstractListModel
         Q_INVOKABLE bool isLayerLocked(const int &index) const;
         Q_INVOKABLE void setLayerLocked(const int &index, const bool &locked);
         Q_INVOKABLE void setLayerVisible(const int &index, const bool &visible);
+        Q_INVOKABLE void setLayerColor(const int &index, const QColor &color);
 
     private:
         struct LayerData
