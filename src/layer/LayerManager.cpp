@@ -58,10 +58,10 @@ void LayerManager::addLayer(const QString &lname, const int &w, const int &h, co
     newLayer.locked = locked;
     newLayer.visible = true;
     newLayer.layer = std::make_shared<Layer>();
-    newLayer.layer->setWidth(w);
-    newLayer.layer->setVisible(newLayer.visible);
-    newLayer.layer->setHeight(h);
+    newLayer.layer->setWidth(static_cast<qreal>(w));
+    newLayer.layer->setHeight(static_cast<qreal>(h));
     newLayer.layer->setBackgroundColor(background);
+    newLayer.layer->setVisible(newLayer.visible);
     m_layers.append(newLayer);
     qDebug() << "Шар додано успішно";
     endInsertRows();
@@ -113,6 +113,14 @@ void LayerManager::setLayerVisible(const int &index, const bool &visible)
         m_layers[index].visible = visible;
         m_layers[index].layer->setVisible(visible);
         emit dataChanged(this->index(index), this->index(index), {VisibleRole});
+    }
+}
+
+void LayerManager::setLayerColor(const int &index, const QColor &color)
+{
+    if (index >= 0 && index < m_layers.size()) {
+        m_layers[index].layer->setBackgroundColor(color);
+        emit dataChanged(this->index(index), this->index(index), {ColorRole});
     }
 }
 }} // namespace harmoniq::layer
