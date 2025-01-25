@@ -8,6 +8,8 @@ set(PROJECT_SOURCES
     Layer.cpp
     LayerManager.hpp
     LayerManager.cpp
+    LayerRenderer.hpp
+    LayerRenderer.cpp
 )
 
 add_library(layer OBJECT
