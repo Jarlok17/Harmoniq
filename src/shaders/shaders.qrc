@@ -1,9 +1,11 @@
 <RCC>
     <qresource prefix="/shaders/frag">
         <file alias="canvas.glsl">fragment/canvas.glsl</file>
+        <file alias="brush.glsl">fragment/brush.glsl</file>
     </qresource>
     <qresource prefix="/shaders/vert">
         <file alias="canvas.glsl">vertex/canvas.glsl</file>
+        <file alias="brush.glsl">vertex/brush.glsl</file>
     </qresource>
 </RCC>
 
