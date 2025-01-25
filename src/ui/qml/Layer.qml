@@ -6,7 +6,7 @@ Flickable {
     id: flickableArea
     anchors.fill: parent
     clip: true
-    interactive: true
+    interactive: false
 
     property real targetScale: 1.0
 
