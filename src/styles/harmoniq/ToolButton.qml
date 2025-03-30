@@ -11,6 +11,7 @@ T.Button {
     property bool isSelected: false
     property url iconSource: ""
     property var buttonManager: null
+    property var onClickedAction: null
 
     width: parent.width
     height: width
@@ -48,6 +49,11 @@ T.Button {
 
             control.isSelected = true;
             console.log("Button clicked: " + iconSource);
+
+            if(onClickedAction)
+            {
+                onClickedAction();
+            }
         }
     }
 
