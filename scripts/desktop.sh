@@ -39,5 +39,5 @@ if [ "$build" -eq 1 ]; then
 fi
 
 if [ "$run" -eq 1 ]; then
-    ./build/desktop/bin/Artwave
+    ./build/desktop/bin/Harmoniq
 fi

@@ -36,14 +36,14 @@ if [ "$configure" -eq 1 ]; then
                 -DANDROID_STL="c++_shared" \
                 -DQT_ANDROID_BUILD_ALL_ABIS=FALSE \
                 -DANDROID_SDK_ROOT="/home/jar/.android/sdk" \
-                -DANDROID_NDK="/home/jar/.android/sdk/ndk/26.3.11579264" \
+                -DANDROID_NDK="/home/jar/.android/sdk/ndk/25.1.8937393" \
                 -DANDROID_PLATFORM=android-23 \
                 -DQT_PATH_ANDROID_ABI_arm64-v8a="/opt/android-libs/aarch64/" \
                 -DQT_ANDROID_PATH_CMAKE_DIR_arm64-v8a="/opt/android-libs/aarch64/lib/cmake/" \
                 -DCMAKE_SYSTEM_NAME=Android \
                 -DCMAKE_SYSTEM_VERSION=24 \
                 -DQT_NO_GLOBAL_APK_TARGET_PART_OF_ALL=OFF \
-                -DCMAKE_TOOLCHAIN_FILE="/home/jar/.android/sdk/ndk/26.3.11579264/build/cmake/android.toolchain.cmake" \
+                -DCMAKE_TOOLCHAIN_FILE="/home/jar/.android/sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake" \
                 -DCMAKE_PREFIX_PATH="/opt/android-libs/aarch64" \
                 -DCMAKE_FIND_ROOT_PATH="/opt/android-libs/aarch64" \
                 -DQT_HOST_PATH="/usr" \
