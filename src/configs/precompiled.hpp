@@ -28,4 +28,6 @@
 #include <QQuickFramebufferObject>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
-#include <QQuickWindow>
+#include <QTabletEvent>
+
+#include "QOpenGLTexture"
