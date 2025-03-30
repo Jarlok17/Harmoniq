@@ -13,7 +13,6 @@ ApplicationWindow {
     height: Screen.height
 
     property var currentTheme: Themes.darkTheme
-    color: "transparent" //currentTheme.background
     Material.theme: currentTheme === Themes.darkTheme ? Material.Dark : Material.Light
     Material.primary: currentTheme.primary
     Material.accent: currentTheme.accent
@@ -80,6 +79,7 @@ ApplicationWindow {
         id: layerLoader
         z: -1
         source: "qrc:/UI/Layer.qml"
+        asynchronous: true
         anchors.centerIn: parent
         anchors.fill: parent
         visible: false
