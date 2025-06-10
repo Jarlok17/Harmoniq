@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="UI/">
+        <file>StartScreen.qml</file>
+        <file>Layer.qml</file>
+        <file>DocumentTab.qml</file>
+	<file>ColorPicker.qml</file>
+
+        <file alias="ToolBars/LeftBar.qml">ToolBars/LeftBar.qml</file>
+        <file alias="ToolBars/RightBar.qml">ToolBars/RightBar.qml</file>
+        <file alias="ToolBars/TopMenu.qml">ToolBars/TopMenu.qml</file>
+        <file alias="ToolBars/TopBar.qml">ToolBars/TopBar.qml</file>
+    </qresource>
+</RCC>

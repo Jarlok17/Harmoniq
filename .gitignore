@@ -1,0 +1,13 @@
+.cache/
+build/
+*.o
+*.a
+*.so
+*.swp
+*.user
+*.log
+.DS_Store
+*.vcxproj
+*.sln
+*.out
+git_token

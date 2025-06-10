@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="Styles/">
+        <file alias="Harmoniq/Themes.qml">harmoniq/Themes.qml</file>
+        <file alias="Harmoniq/MenuBar.qml">harmoniq/MenuBar.qml</file>
+        <file alias="Harmoniq/ToolButton.qml">harmoniq/ToolButton.qml</file>
+
+        <file alias="Harmoniq/qmldir">harmoniq/qmldir</file>
+    </qresource>
+</RCC>

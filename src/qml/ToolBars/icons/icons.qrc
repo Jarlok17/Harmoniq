@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="Icons/64x64">
+        <file alias="brush.png">64x64/brush.png</file>
+        <file alias="color-fill.png">64x64/color-fill.png</file>
+
+        <file alias="line-tool.png">64x64/line-tool.png</file>
+        <file alias="selection-tool.png">64x64/selection-tool.png</file>
+        <file alias="shape-tool.png">64x64/shape-tool.png</file>
+	<file alias="erase.png">64x64/erase.png</file>
+        <file alias="locked.png">64x64/locked.png</file>
+        <file alias="unlocked.png">64x64/unlocked.png</file>
+        <file alias="closed-eye.png">64x64/closed-eye.png</file>
+        <file alias="open-eye.png">64x64/open-eye.png</file>
+        <file alias="trash.png">64x64/trash.png</file>
+        <file alias="add.png">64x64/add.png</file>
+        <file alias="up-arrow.png">64x64/up-arrow.png</file>
+        <file alias="down-arrow.png">64x64/down-arrow.png</file>
+        <file alias="color-picker.png">64x64/color-picker.png</file>
+        <file alias="add-brush.png">64x64/add-brush.png</file> 
+        <file alias="cursor.png">64x64/cursor.png</file>
+        <file alias="move-arrows.png">64x64/move-arrows.png</file>
+        <file alias="menu-brush.png">64x64/menu-brush.png</file> 
+        <file alias="menu-layer.png">64x64/menu-layer.png</file> 
+    </qresource>
+    <qresource prefix="Icons/32x32">
+        <file alias="brush.svg">32x32/brush.svg</file>
+    </qresource>
+</RCC>
