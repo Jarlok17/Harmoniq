@@ -10,7 +10,6 @@ usage() {
     exit 1
 }
 
-# Перевірка аргументів
 if [ $# -eq 0 ]; then
     echo "use -h for help"
     exit 1
@@ -44,7 +43,7 @@ find_qt6() {
     case "$platform" in
         linux)
             for dir in /usr/lib/qt6 /usr/local/qt6 /opt/qt6; do
-                if [ -d "$dir/lib/cmake" ]; then
+                if [ -d "$dir/lib/cmake/Qt6" ]; then
                     qt_path="$dir"
                     break
                 fi
@@ -52,16 +51,16 @@ find_qt6() {
             ;;
         macos)
             for dir in /opt/homebrew/opt/qt6 /usr/local/opt/qt6; do
-                if [ -d "$dir/lib/cmake" ]; then
+                if [ -d "$dir/lib/cmake/Qt6" ]; then
                     qt_path="$dir"
                     break
                 fi
             done
             ;;
         windows)
-            for dir in "C:/Qt/6*" "C:/Program Files/Qt/6*"; do
-                for version in $dir; do
-                    if [ -d "$version/msvc2019_64/lib/cmake" ] || [ -d "$version/mingw_64/lib/cmake" ]; then
+            for dir in "C:/Qt/6.9.1" "C:/Program Files/Qt/6.9.1"; do
+                for version in "$dir"/mingw_64 "$dir"/msvc2019_64; do
+                    if [ -d "$version/lib/cmake/Qt6" ]; then
                         qt_path="$version"
                         break 2
                     fi
@@ -83,10 +82,10 @@ if [ -z "$QT_PATH" ] && [ -n "$QT_PATH" ]; then
 fi
 
 if [ "$platform" = "windows" ]; then
-    GENERATOR="Visual Studio 17 2022"
+    GENERATOR="MinGW Makefiles"
     BUILD_DIR="build/windows"
     BIN_DIR="bin/Release"
-    CMAKE_FLAGS="-A x64"
+    CMAKE_FLAGS=""
 elif [ "$platform" = "macos" ]; then
     GENERATOR="Ninja"
     BUILD_DIR="build/macos"
@@ -104,7 +103,7 @@ mkdir -p "$BUILD_DIR"
 
 if [ "$configure" -eq 1 ]; then
     cmake -B "$BUILD_DIR" -G "$GENERATOR" \
-          -DCMAKE_PREFIX_PATH="$QT_PATH/lib/cmake" \
+          -DCMAKE_PREFIX_PATH="$QT_PATH" \
           -DCMAKE_BUILD_TYPE=Release \
           $CMAKE_FLAGS
     if [ $? -ne 0 ]; then
