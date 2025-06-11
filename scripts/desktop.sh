@@ -84,7 +84,7 @@ fi
 if [ "$platform" = "windows" ]; then
     GENERATOR="MinGW Makefiles"
     BUILD_DIR="build/windows"
-    BIN_DIR="bin/Release"
+    BIN_DIR="bin"
     CMAKE_FLAGS=""
 elif [ "$platform" = "macos" ]; then
     GENERATOR="Ninja"
@@ -116,26 +116,32 @@ fi
 if [ "$build" -eq 1 ]; then
     if [ "$platform" = "windows" ]; then
         cmake --build "$BUILD_DIR" --config Release -j16
+        if [ $? -ne 0 ]; then
+            echo "Build failed"
+            exit 1
+        fi
+        /c/Qt/6.9.1/mingw_64/bin/windeployqt --qmldir src/qml "$BUILD_DIR/$BIN_DIR/Harmoniq.exe"
+        if [ $? -ne 0 ]; then
+            echo "windeployqt failed"
+            exit 1
+        fi
     else
         cmake --build "$BUILD_DIR" -j16
-    fi
-    if [ $? -ne 0 ]; then
-        echo "Build failed"
-        exit 1
-    fi
-fi
-
-if [ "$install" -eq 1 ]; then
-    cmake --install "$BUILD_DIR"
-    if [ $? -ne 0 ]; then
-        echo "Install failed"
-        exit 1
+        if [ $? -ne 0 ]; then
+            echo "Build failed"
+            exit 1
+        fi
     fi
 fi
 
 if [ "$run" -eq 1 ]; then
     if [ "$platform" = "windows" ]; then
-        "$BUILD_DIR/$BIN_DIR/Harmoniq.exe"
+        if [ -f "$BUILD_DIR/$BIN_DIR/Harmoniq.exe" ]; then
+            "$BUILD_DIR/$BIN_DIR/Harmoniq.exe"
+        else
+            echo "Harmoniq.exe not found in $BUILD_DIR/$BIN_DIR"
+            exit 1
+        fi
     else
         "$BUILD_DIR/$BIN_DIR/Harmoniq"
     fi
