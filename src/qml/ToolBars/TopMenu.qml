@@ -67,6 +67,7 @@ MenuBar {
 
     Menu {
         title: qsTr("Edit")
+        font.pixelSize: Themes.currentTheme.fontSize
         Action {
             id: undoAction
             text: qsTr("Undo")
@@ -93,7 +94,8 @@ MenuBar {
         title: qsTr("Panels")
         MenuItem {
             text: qsTr("Toggle Left Toolbar")
-            font.pixelSize: 14
+            font.pixelSize: Themes.currentTheme.fontSize
+            enabled: documentManager.current ? true : false
             onTriggered: {
                 leftBarLoader.visible = !leftBarLoader.visible
                 console.log("Left Toolbar visibility:", leftBarLoader.visible)
@@ -101,7 +103,8 @@ MenuBar {
         }
         MenuItem {
             text: qsTr("Toggle Right Toolbar")
-            font.pixelSize: 14
+            font.pixelSize: Themes.currentTheme.fontSize
+            enabled: documentManager.current ? true : false
             onTriggered: {
                 rightBarLoader.visible = !rightBarLoader.visible
                 console.log("Right Toolbar visibility:", rightBarLoader.visible)
@@ -109,7 +112,8 @@ MenuBar {
         }
         MenuItem {
             text: qsTr("Toggle Layers Panel")
-            font.pixelSize: 14
+            font.pixelSize: Themes.currentTheme.fontSize
+            enabled: documentManager.current ? true : false
             onTriggered: {
                 layerLoader.visible = !layerLoader.visible
                 console.log("Layers Panel visibility:", layerLoader.visible)
