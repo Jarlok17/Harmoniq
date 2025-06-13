@@ -10,6 +10,7 @@
 #include <QApplication>
 #include <QBuffer>
 #include <QColor>
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QGenericMatrix>
