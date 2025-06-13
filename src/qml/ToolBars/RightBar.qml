@@ -106,8 +106,8 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            if (layersList.currentIndex > 0) {
-                                documentManager.currentLayerManager.moveLayer(layersList.currentIndex, layersList.currentIndex - 1);
+                            if (layersList.currentIndex < layersList.count - 1) {
+                                documentManager.currentLayerManager.moveLayer(layersList.currentIndex, layersList.currentIndex + 1);
                             }
                         }
                         Image {
@@ -118,7 +118,6 @@ Rectangle {
                         cursorShape: Qt.PointingHandCursor 
                     }
                 }
-
                 Rectangle {
                     id: downArrowButton
                     width: 40
@@ -130,8 +129,8 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            if (layersList.currentIndex < layersList.count - 1 && layersList.currentIndex >= 0) {
-                                documentManager.currentLayerManager.moveLayer(layersList.currentIndex, layersList.currentIndex + 1);
+                            if (layersList.currentIndex > 0) {
+                                documentManager.currentLayerManager.moveLayer(layersList.currentIndex, layersList.currentIndex - 1);
                             }
                         }
                         Image {
@@ -174,6 +173,7 @@ Rectangle {
             model: documentManager.current ? documentManager.currentLayerManager : null
             anchors.top: bottomContainer.top
             clip: true
+            verticalLayoutDirection: ListView.BottomToTop
 
             onCountChanged: {
                 console.log("Layers count:", layersList.count);
@@ -185,7 +185,7 @@ Rectangle {
                 function onCurrentIndexChanged() {
                     const index = documentManager.currentLayerManager.currentIndex;
                     console.log("QML: LayerManager currentIndexChanged to:", index);
-                    layersList.currentIndex = index;
+                    layersList.currentIndex = index; // Використовуємо прямий індекс
                 }
             }
 
@@ -220,7 +220,7 @@ Rectangle {
                         anchors.fill: parent
                         acceptedButtons: Qt.LeftButton
                         onClicked: {
-                            console.log("Toggling visibility for layer:", index);
+                            console.log("Toggling visibility for layer, UI index:", index);
                             documentManager.currentLayerManager.setLayerVisible(index, !model.visible);
                         }
                         Image {
@@ -275,14 +275,14 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onDoubleClicked: {
-                            console.log("Double-clicked on layer:", index);
+                            console.log("Double-clicked on layer, UI index:", index);
                             parent.parent.isEditing = true;
                             layerNameField.visible = true;
                             layerNameField.forceActiveFocus();
                             layerNameField.selectAll();
                         }
                         onClicked: {
-                            console.log("Selecting layer with index:", index);
+                            console.log("Selecting layer, UI index:", index);
                             layersList.currentIndex = index;
                             documentManager.currentLayerManager.setCurrentIndex(index);
                         }
@@ -307,7 +307,7 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            console.log("Toggling lock for layer:", index);
+                            console.log("Toggling lock for layer, UI index:", index);
                             documentManager.currentLayerManager.setLayerLocked(index, !locked);
                         }
                         Image {
@@ -319,7 +319,7 @@ Rectangle {
                     }
                 }
             }     
-        }    
+        }  
     }
 
     Behavior on x {
