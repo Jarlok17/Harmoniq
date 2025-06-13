@@ -140,12 +140,10 @@ MenuBar {
         fileMode: FileDialog.SaveFile
         nameFilters: ["PNG (*.png)", "JPEG (*.jpg *.jpeg)", "All Files (*)"]
         onAccepted: {
-            if (selectedFile && selectedFile !== "") {
-                var fullPath = selectedFile.toString();
-                var localPath = fullPath.replace("file://", "");
-                console.log("Exporting to:", localPath);
-                documentManager.exportImage(localPath);
+            if (selectedFile) {
+                console.log("Exporting to:", selectedFile);
+                documentManager.exportImage(selectedFile.toString());
             }
-        }
+        }   
     }
 }
