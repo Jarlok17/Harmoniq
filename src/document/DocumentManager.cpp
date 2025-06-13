@@ -61,15 +61,28 @@ bool DocumentManager::exportImage(const QString &filepath)
         return false;
     }
 
+    // Конвертуємо URL у локальний шлях
+    QUrl url(filepath);
+    if (!url.isValid()) {
+        qWarning() << "Invalid file URL:" << filepath;
+        return false;
+    }
+
+    QString localPath = url.toLocalFile();
+
+#ifdef Q_OS_WIN
+    if (localPath.startsWith("/") && localPath.length() > 3 && localPath[2] == ':') {
+        localPath = localPath.mid(1);
+    }
+#endif
+
     QImage image = m_currentDocument->layerManager()->getMergedImage();
     if (image.isNull()) {
         qWarning() << "Failed to get merged image.";
         return false;
     }
 
-    QString normalizedPath = QDir::cleanPath(filepath);
-
-    QFileInfo fileInfo(normalizedPath);
+    QFileInfo fileInfo(localPath);
     QString extension = fileInfo.suffix().toLower();
     QString format;
 
@@ -82,13 +95,13 @@ bool DocumentManager::exportImage(const QString &filepath)
         return false;
     }
 
-    QImageWriter writer(normalizedPath, format.toLatin1());
+    QImageWriter writer(localPath, format.toLatin1());
     if (!writer.write(image)) {
-        qWarning() << "Failed to write image to" << normalizedPath << ":" << writer.errorString();
+        qWarning() << "Failed to write image to" << localPath << ":" << writer.errorString();
         return false;
     }
 
-    qDebug() << "Exported image to" << normalizedPath;
+    qDebug() << "Successfully exported image to" << localPath;
     return true;
 }
 
