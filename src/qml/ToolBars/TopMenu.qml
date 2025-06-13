@@ -143,6 +143,7 @@ MenuBar {
             if (selectedFile && selectedFile !== "") {
                 var fullPath = selectedFile.toString();
                 var localPath = fullPath.replace("file://", "");
+                console.log("Exporting to:", localPath);
                 documentManager.exportImage(localPath);
             }
         }
