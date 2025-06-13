@@ -13,6 +13,7 @@ void CanvasHistoryManager::saveState(const QImage &image, layer::Layer *layer)
     state.image = image.copy();
     state.layer = layer;
     undoStack.push(state);
+    redoStack.clear();
     qDebug() << "State saved. Undo size:" << undoStack.size() << "Layer:" << layer << "Image size:" << image.size();
     emit stateChanged();
 }
@@ -37,7 +38,7 @@ void CanvasHistoryManager::redo()
     if (canRedo()) {
         HistoryState state = redoStack.pop();
         undoStack.push(state);
-        state.layer->setImage(state.image); // Застосовуємо стан напряму
+        state.layer->setImage(state.image);
         state.layer->update();
         qDebug() << "Redo performed. Undo stack size:" << undoStack.size() << "Redo stack size:" << redoStack.size();
         emit stateChanged();
