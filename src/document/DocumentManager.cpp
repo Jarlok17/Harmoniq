@@ -61,7 +61,6 @@ bool DocumentManager::exportImage(const QString &filepath)
         return false;
     }
 
-    // Конвертуємо URL у локальний шлях
     QUrl url(filepath);
     if (!url.isValid()) {
         qWarning() << "Invalid file URL:" << filepath;
