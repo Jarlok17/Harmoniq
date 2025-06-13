@@ -201,6 +201,7 @@ Rectangle {
             }
 
             delegate: Rectangle {
+                id: nameContainer
                 width: parent ? parent.width : rightBar.width
                 height: 40
                 color: Themes.currentTheme.background
@@ -242,7 +243,7 @@ Rectangle {
                         id: layerNameField
                         visible: parent.parent.isEditing
                         anchors.fill: parent
-                        anchors.margins: 5
+                        anchors.margins: 3
                         text: name
                         color: "white"
                         background: Rectangle {
@@ -288,7 +289,7 @@ Rectangle {
                         cursorShape: Qt.PointingHandCursor 
 
                         Text {
-                            visible: !parent.parent.isEditing
+                            visible: !nameContainer.isEditing
                             anchors.centerIn: parent
                             text: name
                             color: "white"
