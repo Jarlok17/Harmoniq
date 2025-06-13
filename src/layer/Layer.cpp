@@ -52,7 +52,7 @@ void Layer::geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry)
 
 void Layer::paint(QPainter *painter)
 {
-    if (m_visible && !m_locked) {
+    if (m_visible) {
         if (!m_initialized)
             updateCanvasSize();
         painter->drawImage(0, 0, m_canvas);
@@ -154,6 +154,7 @@ void Layer::setLocked(const bool &locked)
     if (m_locked != locked) {
         m_locked = locked;
         emit lockedChanged();
+        update();
     }
 }
 
