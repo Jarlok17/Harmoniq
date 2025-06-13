@@ -1,17 +1,23 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
+import QtQuick.Window
 import Harmoniq 1.0
 import Harmoniq_backend 1.0
 
 MenuBar {
     id: menuBar
+    
+    property int canvasWidth: 800
+    property int canvasHeight: 600
+    property string canvasBackgroundColor: "White"
 
     Menu {
         title: qsTr("File")
         MenuItem {
             text: qsTr("New...")
             font.pixelSize: Themes.currentTheme.fontSize
+            onTriggered: dialogNewImage.open()
         }
         MenuItem {
             text: qsTr("Open...")
@@ -84,14 +90,30 @@ MenuBar {
     }
 
     Menu {
-        title: qsTr("View")
+        title: qsTr("Panels")
         MenuItem {
-            text: qsTr("Zoom in")
+            text: qsTr("Toggle Left Toolbar")
             font.pixelSize: 14
+            onTriggered: {
+                leftBarLoader.visible = !leftBarLoader.visible
+                console.log("Left Toolbar visibility:", leftBarLoader.visible)
+            }
         }
         MenuItem {
-            text: qsTr("Zoom out")
+            text: qsTr("Toggle Right Toolbar")
             font.pixelSize: 14
+            onTriggered: {
+                rightBarLoader.visible = !rightBarLoader.visible
+                console.log("Right Toolbar visibility:", rightBarLoader.visible)
+            }
+        }
+        MenuItem {
+            text: qsTr("Toggle Layers Panel")
+            font.pixelSize: 14
+            onTriggered: {
+                layerLoader.visible = !layerLoader.visible
+                console.log("Layers Panel visibility:", layerLoader.visible)
+            }
         }
     }
 
@@ -100,9 +122,45 @@ MenuBar {
         MenuItem {
             text: qsTr("About")
             font.pixelSize: Themes.currentTheme.fontSize
+            onTriggered: aboutWindow.visible = true
         }
     }
+    
+    Window {
+        id: aboutWindow
+        title: qsTr("Про Harmoniq")
+        maximumWidth: 500
+        maximumHeight: 200
+        minimumWidth: 500 
+        minimumHeight: 200
+        visible: false
+        color: Themes.currentTheme.background
+        modality: Qt.ApplicationModal
+        flags: Qt.Dialog
 
+        x: (Screen.width - width) / 2
+        y: (Screen.height - height) / 2
+
+        Column {
+            anchors.centerIn: parent
+            spacing: 10
+            Text {
+                text: qsTr("Harmoniq - кросплатформний графічний застосунок\nВерсія: 1.0\nАвтор: Ярослав\nЛіцензія: MIT")
+                font.pixelSize: Themes.currentTheme.fontSize
+                color: "white"
+            }
+            Text {
+                text: qsTr("© 2025 Harmoniq. Усі права захищено.")
+                font.pixelSize: Themes.currentTheme.fontSize - 2
+                color: "white"
+            }
+            Button {
+                text: qsTr("OK")
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: aboutWindow.visible = false
+            }
+        }
+    }
     FileDialog {
         id: saveDialog
         title: qsTr("Save Project As")
@@ -145,5 +203,105 @@ MenuBar {
                 documentManager.exportImage(selectedFile.toString());
             }
         }   
+    }
+
+    Popup {
+        id: dialogNewImage
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        anchors.centerIn: Overlay.overlay
+
+        background: Rectangle {
+            color: Themes.currentTheme.background
+            radius: 10
+        }
+
+        contentItem: Column {
+            spacing: 10
+            padding: 10
+
+            Label {
+                text: qsTr("Width:")
+            }
+
+            TextField {
+                id: widthField
+                placeholderText: qsTr("Enter width")
+                text: "800"
+            }
+
+            Label {
+                text: qsTr("Height:")
+            }
+
+            TextField {
+                id: heightField
+                placeholderText: qsTr("Enter height")
+                text: "600"
+            }
+
+            Label {
+                text: qsTr("Background Color:")
+            }
+
+            Row {
+                spacing: 10
+                Button {
+                    id: selectColor
+                    text: qsTr("Select color")
+                    onClicked: {
+                        colorDialog.open()
+                    }
+                }
+                Rectangle {
+                    id: selectedColor
+                    width: 50
+                    height: 50
+                    color: canvasBackgroundColor
+                }
+            }
+
+            Row {
+                spacing: 10
+                Button {
+                    text: qsTr("Create")
+                    onClicked: {
+                        if (parseInt(widthField.text) > 0 && parseInt(heightField.text) > 0) {
+                            canvasWidth = parseInt(widthField.text);
+                            canvasHeight = parseInt(heightField.text);
+                            canvasBackgroundColor = selectedColor.color;
+                            
+                            startScreen.visible = false;
+                            leftBarLoader.visible = true;
+                            rightBarLoader.visible = true;
+                            topBarLoader.visible = true;
+                            layerLoader.visible = true;
+
+                            documentManager.addDocument("Untitled", "");
+                            documentManager.setCurrentIndex(documentManager.count() - 1);
+                            documentManager.currentLayerManager.addLayer("background", canvasWidth, canvasHeight, canvasBackgroundColor, false);
+                            
+                            dialogNewImage.close();
+                        } else {
+                            console.log("Invalid dimensions");
+                        }
+                    }
+                }
+                Button {
+                    text: qsTr("Cancel")
+                    onClicked: dialogNewImage.close()
+                }
+            }
+        }
+    }
+
+    ColorDialog {
+        id: colorDialog
+        title: qsTr("Select the color...")
+        onAccepted: {
+            selectedColor.color = colorDialog.selectedColor;
+            canvasBackgroundColor = colorDialog.selectedColor;
+        }
     }
 }
