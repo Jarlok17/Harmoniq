@@ -67,7 +67,9 @@ bool DocumentManager::exportImage(const QString &filepath)
         return false;
     }
 
-    QFileInfo fileInfo(filepath);
+    QString normalizedPath = QDir::cleanPath(filepath);
+
+    QFileInfo fileInfo(normalizedPath);
     QString extension = fileInfo.suffix().toLower();
     QString format;
 
@@ -80,13 +82,13 @@ bool DocumentManager::exportImage(const QString &filepath)
         return false;
     }
 
-    QImageWriter writer(filepath, format.toLatin1());
+    QImageWriter writer(normalizedPath, format.toLatin1());
     if (!writer.write(image)) {
-        qWarning() << "Failed to write image to" << filepath << ":" << writer.errorString();
+        qWarning() << "Failed to write image to" << normalizedPath << ":" << writer.errorString();
         return false;
     }
 
-    qDebug() << "Exported image to" << filepath;
+    qDebug() << "Exported image to" << normalizedPath;
     return true;
 }
 
