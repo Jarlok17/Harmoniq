@@ -75,6 +75,7 @@ void Layer::mousePressEvent(QMouseEvent *event)
         m_toolHandler->press(event);
         update();
     }
+    emit stateChanged(m_canvas, this);
 }
 
 void Layer::mouseMoveEvent(QMouseEvent *event)
