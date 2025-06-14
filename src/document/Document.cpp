@@ -88,6 +88,10 @@ Document *Document::fromJson(const QJsonObject &obj, QObject *parent)
         }
     }
 
+    for (int i = 0; i < doc->layerManager()->rowCount(); ++i) {
+        emit doc->layerManager()->layerImageChanged(i);
+    }
+
     doc->layerManager()->setCurrentIndex(doc->layerManager()->rowCount() - 1);
     doc->setModified(false);
 
