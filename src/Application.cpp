@@ -1,6 +1,7 @@
 #include "../tools/ToolSettings.hpp"
 #include "document/DocumentManager.hpp"
 #include "layer/Layer.hpp"
+#include "provider/ThumbnailImageProvider.hpp"
 #include "tools/ToolHandler.hpp"
 
 int main(int argc, char *argv[])
@@ -25,6 +26,15 @@ int main(int argc, char *argv[])
     harmoniq::document::DocumentManager *documentManager = new harmoniq::document::DocumentManager();
     engine.rootContext()->setContextProperty("documentManager", documentManager);
 
+    harmoniq::ThumbnailImageProvider *thumbnailProvider = new harmoniq::ThumbnailImageProvider();
+    engine.addImageProvider(QLatin1String("thumbnail"), thumbnailProvider);
+
+    QObject::connect(documentManager, &harmoniq::document::DocumentManager::layerManagerChanged,
+                     [thumbnailProvider, documentManager]() {
+                         thumbnailProvider->setLayerManager(documentManager->currentLayerManager());
+                         qDebug() << "ThumbnailImageProvider updated with LayerManager:" << documentManager->currentLayerManager();
+                     });
+
     const QUrl url(QStringLiteral("qrc:/Qml/main.qml"));
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreated, &app,
@@ -35,6 +45,5 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
 
     engine.load(url);
-
     return app.exec();
 }
