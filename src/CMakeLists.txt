@@ -4,6 +4,7 @@ add_subdirectory(config)
 add_subdirectory(document)
 add_subdirectory(tools)
 add_subdirectory(history)
+add_subdirectory(provider)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -42,6 +43,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     layer
     configs
     document
+    provider
     tools
     history
 )
