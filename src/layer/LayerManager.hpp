@@ -8,6 +8,7 @@ class LayerManager : public QAbstractListModel
 {
         Q_OBJECT
         Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
+
     public:
         enum LayerRoles {
             NameRole = Qt::UserRole + 1,
@@ -46,6 +47,7 @@ class LayerManager : public QAbstractListModel
         Q_INVOKABLE void setLayerName(const int &index, const QString &name);
         Q_INVOKABLE QImage getMergedImage() const;
         Q_INVOKABLE Layer *getCurrentLayer() const;
+        Q_INVOKABLE QImage getLayerImage(int index);
         LayerManager::LayerData *get(int index);
 
         Q_INVOKABLE ToolType currentTool() const { return m_currentTool; }
@@ -56,6 +58,7 @@ class LayerManager : public QAbstractListModel
         void toolChanged(ToolType tool);
         void currentIndexChanged();
         void layerAdded(Layer *layer);
+        void layerImageChanged(int index);
 
     private:
         int m_currentIndex = -1;

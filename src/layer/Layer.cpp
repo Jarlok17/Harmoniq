@@ -76,6 +76,7 @@ void Layer::mousePressEvent(QMouseEvent *event)
         update();
     }
     emit stateChanged(m_canvas, this);
+    emit imageChanged(m_canvas);
 }
 
 void Layer::mouseMoveEvent(QMouseEvent *event)
@@ -105,8 +106,10 @@ void Layer::mouseReleaseEvent(QMouseEvent *event)
 
     if (m_toolHandler) {
         m_toolHandler->release(event);
-        emit stateChanged(m_canvas, this);
         update();
+
+        emit stateChanged(m_canvas, this);
+        emit imageChanged(m_canvas);
     }
 }
 
@@ -145,6 +148,7 @@ void Layer::setVisibility(const bool &visible)
     if (m_visible != visible) {
         m_visible = visible;
         emit visibleUpdated(visible);
+        emit imageChanged(m_canvas);
         update();
     }
 }
@@ -163,6 +167,8 @@ void Layer::setImage(const QImage &image)
     if (m_canvas != image) {
         m_canvas = image;
         update();
+
+        emit imageChanged(m_canvas);
     }
 }
 
@@ -232,5 +238,6 @@ void Layer::clearSelection()
 {
     m_currentSelection = QRect();
     update();
+    emit imageChanged(m_canvas);
 }
 }} // namespace harmoniq::layer

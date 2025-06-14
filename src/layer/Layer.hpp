@@ -50,6 +50,7 @@ class Layer : public QQuickPaintedItem
         void lockedChanged();
         void activeChanged();
         void stateChanged(const QImage &image, Layer *layer);
+        void imageChanged(const QImage &image);
 
     private:
         QImage m_canvas;

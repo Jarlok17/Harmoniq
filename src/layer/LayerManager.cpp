@@ -40,6 +40,13 @@ QVariant LayerManager::data(const QModelIndex &index, int role) const
     }
 }
 
+QImage LayerManager::getLayerImage(int index)
+{
+    if (index < 0 || index >= m_layers.size())
+        return QImage();
+    return m_layers[index].layer->image();
+}
+
 Layer *LayerManager::getCurrentLayer() const
 {
     if (m_currentIndex < 0 || m_currentIndex >= m_layers.size())
@@ -127,6 +134,8 @@ void LayerManager::addLayer(const QString &lname, const int &w, const int &h, co
 
     emit layerAdded(newLayer.layer);
 
+    connect(newLayer.layer, &Layer::imageChanged, this, [this, index = m_layers.count() - 1]() { emit layerImageChanged(index); });
+
     setCurrentIndex(m_layers.count() - 1);
 }
 
@@ -171,6 +180,7 @@ void LayerManager::setCurrentIndex(int index)
     if (index >= 0 && index < m_layers.size() && m_currentIndex != index) {
         m_currentIndex = index;
         emit currentIndexChanged();
+        emit layerImageChanged(index);
         qDebug() << "CURRENT INDEX: " << m_currentIndex;
     }
 
