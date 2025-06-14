@@ -213,6 +213,7 @@ void DocumentManager::loadFromFile(const QString &filePath)
         });
 
         setCurrent(doc);
+        emit layerManagerChanged();
         emit documentsChanged();
     } else {
         qWarning() << "Failed to open file for reading:" << localPath;
