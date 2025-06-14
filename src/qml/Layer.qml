@@ -7,7 +7,7 @@ Flickable {
     anchors.fill: parent
     clip: true
     interactive: false
-    visible: documentManager.current !== null
+    visible: documentManager && documentManager.current !== null
 
     property real targetScale: 1.0
     property real contentW: 800
@@ -24,7 +24,7 @@ Flickable {
         width: parent.width
         height: parent.height
         color: "transparent"
-        visible: documentManager.current === null
+        visible: documentManager && documentManager.current === null
 
         Text {
             anchors.centerIn: parent
@@ -42,7 +42,7 @@ Flickable {
         clip: true
 
         Repeater {
-            model: documentManager.current ? documentManager.currentLayerManager : null
+            model: documentManager && documentManager.current ? documentManager.currentLayerManager : null
 
             delegate: Item {
                 id: layerItem
