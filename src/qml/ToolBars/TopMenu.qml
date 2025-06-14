@@ -13,28 +13,28 @@ MenuBar {
     property string canvasBackgroundColor: "White"
 
     Menu {
+        font.pixelSize: Themes.currentTheme.fontSize
         title: qsTr("File")
         MenuItem {
             text: qsTr("New...")
-            font.pixelSize: Themes.currentTheme.fontSize
             onTriggered: dialogNewImage.open()
         }
         MenuItem {
             text: qsTr("Open...")
-            font.pixelSize: Themes.currentTheme.fontSize
             onTriggered: openDialog.open()
         }
         Action {
             text: qsTr("Save...")
+            enabled: documentManager && documentManager.current ? true : false
             shortcut: "Ctrl+S"
             onTriggered: {
-                const currentPath = documentManager.current ? documentManager.current.path : "";
+                const currentPath = documentManager && documentManager.current ? documentManager.current.path : "";
                 console.log("Save triggered with path:", currentPath);
                 if (!currentPath || currentPath === "") {
                     saveDialog.open();
                 } else {
                     const success = documentManager.saveToFile(currentPath);
-                    if (documentManager.current) {
+                    if (documentManager && documentManager.current) {
                         if (!success) {
                             console.warn("Save failed, modified state unchanged");
                         } else {
@@ -47,18 +47,18 @@ MenuBar {
         }
         MenuItem {
             text: qsTr("Save as...")
-            font.pixelSize: Themes.currentTheme.fontSize
+            enabled: documentManager && documentManager.current ? true : false
             onTriggered: saveDialog.open()
         }
         MenuItem {
             text: qsTr("Export as image...")
-            font.pixelSize: Themes.currentTheme.fontSize
+            enabled: documentManager && documentManager.current ? true : false
             onTriggered: exportDialog.open()
         }
     }
 
     Connections {
-        target: documentManager.current ? documentManager.current.historyManager : null
+        target: documentManager && documentManager.current ? documentManager.current.historyManager : null
         function onStateChanged() {
             undoAction.enabled = documentManager.current.historyManager.canUndo();
             redoAction.enabled = documentManager.current.historyManager.canRedo();
@@ -72,7 +72,7 @@ MenuBar {
             id: undoAction
             text: qsTr("Undo")
             shortcut: "Ctrl+Z"
-            enabled: documentManager.current ? documentManager.current.historyManager.canUndo() : false
+            enabled: documentManager && documentManager.current ? documentManager.current.historyManager.canUndo() : false
             onTriggered: {
                 console.log("Undo triggered. Can undo:", documentManager.current.historyManager.canUndo());
                 documentManager.current.historyManager.undo();
@@ -82,7 +82,7 @@ MenuBar {
             id: redoAction
             text: qsTr("Redo")
             shortcut: "Ctrl+Shift+Z"
-            enabled: documentManager.current ? documentManager.current.historyManager.canRedo() : false
+            enabled: documentManager && documentManager.current ? documentManager.current.historyManager.canRedo() : false
             onTriggered: {
                 console.log("Redo triggered. Can redo:", documentManager.current.historyManager.canRedo());
                 documentManager.current.historyManager.redo();
@@ -95,7 +95,7 @@ MenuBar {
         MenuItem {
             text: qsTr("Toggle Left Toolbar")
             font.pixelSize: Themes.currentTheme.fontSize
-            enabled: documentManager.current ? true : false
+            enabled: documentManager && documentManager.current ? true : false
             onTriggered: {
                 leftBarLoader.visible = !leftBarLoader.visible
                 console.log("Left Toolbar visibility:", leftBarLoader.visible)
@@ -104,18 +104,18 @@ MenuBar {
         MenuItem {
             text: qsTr("Toggle Right Toolbar")
             font.pixelSize: Themes.currentTheme.fontSize
-            enabled: documentManager.current ? true : false
+            enabled: documentManager && documentManager.current ? true : false
             onTriggered: {
                 rightBarLoader.visible = !rightBarLoader.visible
                 console.log("Right Toolbar visibility:", rightBarLoader.visible)
             }
         }
         MenuItem {
-            text: qsTr("Toggle Layers Panel")
+            text: qsTr("Toggle Top Panel")
             font.pixelSize: Themes.currentTheme.fontSize
-            enabled: documentManager.current ? true : false
+            enabled: documentManager && documentManager.current ? true : false
             onTriggered: {
-                layerLoader.visible = !layerLoader.visible
+                topBarLoader.visible = !tpoBarLoader.visible
                 console.log("Layers Panel visibility:", layerLoader.visible)
             }
         }
@@ -175,7 +175,7 @@ MenuBar {
                 var fullPath = selectedFile.toString();
                 var localPath = fullPath.replace("file://", "");
                 var fileName = localPath.split('/').pop().split('.json')[0];
-                if (documentManager.current) {
+                if (documentManager && documentManager.current) {
                     documentManager.current.setName(fileName);
                     documentManager.current.setPath(localPath);
                     documentManager.saveToFile(selectedFile);
@@ -192,6 +192,13 @@ MenuBar {
         nameFilters: ["Harmoniq Projects (*.json)"]
         onAccepted: {
             console.log("OPEN DIALOG ACCEPTED:", selectedFile)
+
+            startScreen.visible = false;
+            leftBarLoader.visible = true;
+            rightBarLoader.visible = true;
+            topBarLoader.visible = true;
+            layerLoader.visible = true; 
+
             documentManager.loadFromFile(selectedFile)
         }
     }
