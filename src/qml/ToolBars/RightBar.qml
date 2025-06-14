@@ -170,22 +170,27 @@ Rectangle {
             id: layersList
             width: bottomContainer.width
             height: bottomContainer.height - layerContainerBottomMenu.height
-            model: documentManager.current ? documentManager.currentLayerManager : null
+            model: documentManager && documentManager.current ? documentManager.currentLayerManager : null
             anchors.top: bottomContainer.top
             clip: true
             verticalLayoutDirection: ListView.BottomToTop
 
             onCountChanged: {
-                console.log("Layers count:", layersList.count);
+                console.log("Layers count changed:", layersList.count);
+                forceThumbnailUpdate(); // Примусове оновлення після зміни кількості шарів
             }
 
-            Connections {
-                target: documentManager.currentLayerManager
-                ignoreUnknownSignals: true
-                function onCurrentIndexChanged() {
-                    const index = documentManager.currentLayerManager.currentIndex;
-                    console.log("QML: LayerManager currentIndexChanged to:", index);
-                    layersList.currentIndex = index; // Використовуємо прямий індекс
+            function forceThumbnailUpdate() {
+                console.log("Forcing thumbnail update for all layers");
+                for (var i = 0; i < layersList.count; i++) {
+                    var item = layersList.itemAtIndex(i);
+                    if (item && item.layerThumbnail) {
+                        item.layerThumbnail.source = "";
+                        item.layerThumbnail.source = "image://thumbnail/" + i + "?v=" + new Date().getTime();
+                        console.log("Updated thumbnail source for index:", i);
+                    } else {
+                        console.log("Failed to update thumbnail for index:", i, "Item:", item);
+                    }
                 }
             }
 
@@ -193,9 +198,22 @@ Rectangle {
                 target: documentManager
                 function onLayerManagerChanged() {
                     console.log("QML: LayerManager set");
-                    if (documentManager.currentLayerManager) {
+                    if (documentManager && documentManager.current && documentManager.currentLayerManager) {
                         layersList.currentIndex = documentManager.currentLayerManager.currentIndex;
                         console.log("QML: Initial currentIndex set to:", layersList.currentIndex);
+                        forceThumbnailUpdate();
+                    }
+                }
+            }
+
+            Connections {
+                target: documentManager && documentManager.current ? documentManager.currentLayerManager : null
+                ignoreUnknownSignals: true
+                function onCurrentIndexChanged() {
+                    if (documentManager && documentManager.current && documentManager.currentLayerManager) {
+                        const index = documentManager.currentLayerManager.currentIndex;
+                        console.log("QML: LayerManager currentIndexChanged to:", index);
+                        layersList.currentIndex = index;
                     }
                 }
             }
@@ -203,7 +221,7 @@ Rectangle {
             delegate: Rectangle {
                 id: nameContainer
                 width: parent ? parent.width : rightBar.width
-                height: 40
+                height: 60
                 color: Themes.currentTheme.background
                 border.color: ListView.isCurrentItem ? "white" : Qt.darker(Themes.currentTheme.background, 0.5)
 
@@ -220,23 +238,52 @@ Rectangle {
                         anchors.fill: parent
                         acceptedButtons: Qt.LeftButton
                         onClicked: {
-                            console.log("Toggling visibility for layer, UI index:", index);
-                            documentManager.currentLayerManager.setLayerVisible(index, !model.visible);
+                            if (documentManager && documentManager.current && documentManager.currentLayerManager) {
+                                console.log("Toggling visibility for layer, UI index:", index);
+                                documentManager.currentLayerManager.setLayerVisible(index, !model.visible);
+                            }
                         }
                         Image {
                             anchors.centerIn: parent
-                            source: model.visible ? "qrc:/Icons/64x64/open-eye.png" : "qrc:/Icons/64x64/closed-eye.png"
+                            source: model ? (model.visible ? "qrc:/Icons/64x64/open-eye.png" : "qrc:/Icons/64x64/closed-eye.png") : ""
                             sourceSize: Qt.size(24, 24)
                         }
-                        cursorShape: Qt.PointingHandCursor 
+                        cursorShape: Qt.PointingHandCursor
+                    }
+                }
+
+                Image {
+                    id: layerThumbnail
+                    width: 40
+                    height: 40
+                    anchors.left: parent.left
+                    anchors.leftMargin: 45
+                    anchors.verticalCenter: parent.verticalCenter
+                    source: documentManager && documentManager.current && documentManager.currentLayerManager ? "image://thumbnail/" + index + "?v=" + new Date().getTime() : ""
+                    fillMode: Image.PreserveAspectFit
+                    cache: false
+                    asynchronous: true
+
+                    Connections {
+                        target: documentManager && documentManager.current ? documentManager.currentLayerManager : null
+                        ignoreUnknownSignals: true
+                        function onLayerImageChanged(changedIndex) {
+                            if (changedIndex === index) {
+                                console.log("QML: Layer image changed for index:", changedIndex);
+                                layerThumbnail.source = "";
+                                layerThumbnail.source = "image://thumbnail/" + index + "?v=" + new Date().getTime();
+                                console.log("Thumbnail updated for index:", index);
+                            }
+                        }
                     }
                 }
 
                 Rectangle {
-                    Layout.fillWidth: true
-                    width: parent.width - 100
+                    width: parent.width - 100 - 40 - 10
                     height: 40
-                    anchors.centerIn: parent
+                    anchors.left: layerThumbnail.right
+                    anchors.leftMargin: 5
+                    anchors.verticalCenter: parent.verticalCenter
                     color: "transparent"
 
                     TextField {
@@ -244,7 +291,7 @@ Rectangle {
                         visible: parent.parent.isEditing
                         anchors.fill: parent
                         anchors.margins: 3
-                        text: name
+                        text: model ? name : ""
                         color: "white"
                         background: Rectangle {
                             color: Themes.currentTheme.background
@@ -252,7 +299,7 @@ Rectangle {
                             radius: 4
                         }
                         onEditingFinished: {
-                            if (text.trim() !== "") {
+                            if (documentManager && documentManager.current && documentManager.currentLayerManager && text.trim() !== "") {
                                 documentManager.currentLayerManager.setLayerName(index, text.trim());
                             }
                             console.log("Editing finished, setting isEditing to false");
@@ -275,23 +322,27 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onDoubleClicked: {
-                            console.log("Double-clicked on layer, UI index:", index);
-                            parent.parent.isEditing = true;
-                            layerNameField.visible = true;
-                            layerNameField.forceActiveFocus();
-                            layerNameField.selectAll();
+                            if (documentManager && documentManager.current && documentManager.currentLayerManager) {
+                                console.log("Double-clicked on layer, UI index:", index);
+                                parent.parent.isEditing = true;
+                                layerNameField.visible = true;
+                                layerNameField.forceActiveFocus();
+                                layerNameField.selectAll();
+                            }
                         }
                         onClicked: {
-                            console.log("Selecting layer, UI index:", index);
-                            layersList.currentIndex = index;
-                            documentManager.currentLayerManager.setCurrentIndex(index);
+                            if (documentManager && documentManager.current && documentManager.currentLayerManager) {
+                                console.log("Selecting layer, UI index:", index);
+                                layersList.currentIndex = index;
+                                documentManager.currentLayerManager.setCurrentIndex(index);
+                            }
                         }
-                        cursorShape: Qt.PointingHandCursor 
+                        cursorShape: Qt.PointingHandCursor
 
                         Text {
-                            visible: !nameContainer.isEditing
+                            visible: !nameContainer.isEditing && model
                             anchors.centerIn: parent
-                            text: name
+                            text: model ? name : ""
                             color: "white"
                         }
                     }
@@ -307,18 +358,24 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            console.log("Toggling lock for layer, UI index:", index);
-                            documentManager.currentLayerManager.setLayerLocked(index, !locked);
+                            if (documentManager && documentManager.current && documentManager.currentLayerManager) {
+                                console.log("Toggling lock for layer, UI index:", index);
+                                documentManager.currentLayerManager.setLayerLocked(index, !locked);
+                            }
                         }
                         Image {
                             anchors.centerIn: parent
-                            source: locked ? "qrc:/Icons/64x64/locked.png" : "qrc:/Icons/64x64/unlocked.png"
+                            source: model ? (locked ? "qrc:/Icons/64x64/locked.png" : "qrc:/Icons/64x64/unlocked.png") : ""
                             sourceSize: Qt.size(32, 32)
                         }
-                        cursorShape: Qt.PointingHandCursor 
+                        cursorShape: Qt.PointingHandCursor
                     }
                 }
-            }     
+
+                Component.onCompleted: {
+                    console.log("Delegate initialized for index:", index);
+                }
+            }
         }  
     }
 
