@@ -23,6 +23,7 @@
 #include <QPainterPath>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickImageProvider>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QQuickStyle>
