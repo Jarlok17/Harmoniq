@@ -1,3 +1,5 @@
+#include <QIcon>
+
 #include "../tools/ToolSettings.hpp"
 #include "document/DocumentManager.hpp"
 #include "layer/Layer.hpp"
@@ -34,6 +36,12 @@ int main(int argc, char *argv[])
                          thumbnailProvider->setLayerManager(documentManager->currentLayerManager());
                          qDebug() << "ThumbnailImageProvider updated with LayerManager:" << documentManager->currentLayerManager();
                      });
+
+    QIcon appIcon;
+    appIcon.addFile(":/Icons/logo/h-32x32.png", QSize(32, 32));
+    appIcon.addFile(":/Icons/logo/h-64x64.png", QSize(64, 64));
+    appIcon.addFile(":/Icons/logo/h-128x128.png", QSize(128, 128));
+    app.setWindowIcon(appIcon);
 
     const QUrl url(QStringLiteral("qrc:/Qml/main.qml"));
     QObject::connect(
