@@ -193,6 +193,16 @@ bool DocumentManager::saveToFile(const QString &filepath)
 void DocumentManager::loadFromFile(const QString &filePath)
 {
     const QString localPath = QUrl(filePath).toLocalFile();
+
+    for (int i = 0; i < m_documents.size(); ++i) {
+        Document *existingDoc = m_documents.at(i);
+        if (existingDoc->path() == localPath) {
+            qDebug() << "Document already open at path:" << localPath << "Switching to index:" << i;
+            setCurrentIndex(i);
+            return;
+        }
+    }
+
     QFile file(localPath);
     if (file.open(QIODevice::ReadOnly)) {
         QJsonDocument jsonDoc = QJsonDocument::fromJson(file.readAll());
