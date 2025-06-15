@@ -91,7 +91,7 @@ MenuBar {
     }
 
     Menu {
-        title: qsTr("Panels")
+        title: qsTr("View")
         MenuItem {
             text: qsTr("Toggle Left Toolbar")
             font.pixelSize: Themes.currentTheme.fontSize
