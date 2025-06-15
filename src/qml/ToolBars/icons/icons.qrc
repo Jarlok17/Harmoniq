@@ -25,4 +25,9 @@
     <qresource prefix="Icons/32x32">
         <file alias="brush.svg">32x32/brush.svg</file>
     </qresource>
+    <qresource prefix="Icons/logo">
+        <file alias="h-128x128.png">logo/h-128x128.png</file>
+	<file alias="h-64x64.png">logo/h-64x64.png</file>
+	<file alias="h-32x32.png">logo/h-32x32.png</file>
+    </qresource>
 </RCC>
